@@ -382,14 +382,14 @@ export const NFTBazzarProvider = ({ children }) => {
   const buyNFT = async (nft) => {
     try {
       const contract = await connectingWithSmartContract();
-      const price = ethers.utils.parseUnits(nft.price.toString(), "ether");
+      const price = ethers.parseUnits(nft.price.toString(), "ether");
 
-      const transaction = await contract.createMarketItem(nft.tokenId, {
+      const transaction = await contract.createMarketSale(nft.tokenId, {
         value: price,
       });
       await transaction.wait();
     } catch (error) {
-      console.log("Error while buying NFTs");
+      console.log("Error while buying NFTs",error);
     }
   };
 

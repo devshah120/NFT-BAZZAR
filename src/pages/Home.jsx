@@ -375,6 +375,7 @@ function Home() {
                   Image={nft.image}
                   tokenId={nft.tokenId}
                   description={nft.description}
+                  owner={nft.owner}
                 />
               </SwiperSlide>
             ))}

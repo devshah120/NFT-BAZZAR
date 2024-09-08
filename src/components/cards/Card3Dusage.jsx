@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { CardBody, CardContainer, CardItem } from "../cards/Card3D";
 import aimg from "../../assets/card/a.png";
 
-const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description, className }) => {
+const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description,owner, className }) => {
   const trimAddress = (address) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };
@@ -11,7 +11,7 @@ const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description, classNa
   return (
     <Link 
       to={`/nft/${tokenId}`}
-      state={{ Name, Creator, Price, Image, tokenId,description }}
+      state={{ Name, Creator, Price, Image, tokenId,description,owner }}
     >
       <CardContainer className={`inter-var ${className}`}>
         <CardBody className="bg-gray-50 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-[300px] h-auto rounded-xl p-6 border">  
@@ -51,7 +51,7 @@ const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description, classNa
               </div>
             </CardItem>
             <CardItem translateZ={40} as="button" className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold">
-              Buy Now
+              View NFT
             </CardItem>
           </div>
         </CardBody>
