@@ -53,19 +53,20 @@ contract NFTBazzar is ERC721URIStorage {
     }
 
     // Create NFT
-    function createToken(
-        string memory tokenURI,
-        uint256 price
-    ) public payable returns (uint256) {
-        _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
+    event TokenCreated(uint256 indexed tokenId, string tokenURI, uint256 price);
 
-        _mint(msg.sender, newTokenId);
-        _setTokenURI(newTokenId, tokenURI);
-        createMarketItem(newTokenId, price);
+function createToken(string memory tokenURI, uint256 price) public payable returns (uint256) {
+    _tokenIds.increment();
+    uint256 newTokenId = _tokenIds.current();
 
-        return newTokenId;
-    }
+    _mint(msg.sender, newTokenId);
+    _setTokenURI(newTokenId, tokenURI);
+    createMarketItem(newTokenId, price);
+
+    emit TokenCreated(newTokenId, tokenURI, price);
+
+    return newTokenId;
+}
 
     // Create Market Item
     function createMarketItem(uint256 tokenId, uint256 price) private {
@@ -136,22 +137,23 @@ contract NFTBazzar is ERC721URIStorage {
 
     // Get all unsold NFT data
     function fetchMarketItem() public view returns (MarketItem[] memory) {
-        uint256 itemCount = _tokenIds.current();
-        uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
-        uint256 currentIndex = 0;
+    uint256 itemCount = _tokenIds.current();
+    uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
+    require(unsoldItemCount > 0, "No unsold items");
 
-        MarketItem[] memory items = new MarketItem[](unsoldItemCount);
-        for (uint256 i = 0; i < itemCount; i++) {
-            if (idMarketItem[i + 1].owner == address(this)) {
-                uint256 currentId = i + 1;
-                MarketItem storage currentItem = idMarketItem[currentId];
-                items[currentIndex] = currentItem;
-                currentIndex += 1;
-            }
+    MarketItem[] memory items = new MarketItem[](unsoldItemCount);
+    uint256 currentIndex = 0;
+
+    for (uint256 i = 0; i < itemCount; i++) {
+        if (idMarketItem[i + 1].owner == address(this)) {
+            items[currentIndex] = idMarketItem[i + 1];
+            currentIndex += 1;
         }
-
-        return items;
     }
+
+    require(currentIndex > 0, "No items found");
+    return items;
+}
 
     // My NFTs
     function fetchMyNFT() public view returns (MarketItem[] memory) {

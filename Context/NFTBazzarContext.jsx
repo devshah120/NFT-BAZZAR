@@ -202,9 +202,9 @@ export const NFTBazzarProvider = ({ children }) => {
       console.log("Data is missing");
       return;
     }
-
+  
     const data = JSON.stringify({ name, description, price, image });
-
+  
     try {
       const response = await axios({
         method: "POST",
@@ -217,37 +217,64 @@ export const NFTBazzarProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
-
+  
       const ipfsUrl = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
       console.log("Uploaded to IPFS link:", ipfsUrl);
-
-      await createSale(ipfsUrl, price);
+  
+      const tokenId = await createSale(ipfsUrl, price);
+      if (tokenId) {
+        console.log("NFT created successfully with tokenId:", tokenId.toString());
+      } else {
+        console.log("NFT creation failed or tokenId could not be determined");
+      }
     } catch (error) {
       console.error("Error in creating NFT:", error);
     }
   };
 
   const createSale = async (url, formInputPrice) => {
+    console.log("Creating sale for:", url, formInputPrice);
+    
     try {
-      const price = ethers.parseUnits(formInputPrice, 18);
+      const price = ethers.parseUnits(formInputPrice.toString(), 18);
       const contract = await connectingWithSmartContract();
       if (!contract) {
         throw new Error("Failed to connect to smart contract");
       }
   
-      // let listingPrice = "0.0025";
       const listingPrice = ethers.parseUnits("0.0025", "ether");
-      // if (contract.getListingPrice) {
-      //   listingPrice = await contract.callStatic.getListingPrice();
-      // }
   
-      const transaction = await contract.createToken(url, price, { value: listingPrice.toString() });
+      console.log("Calling createToken with:", url, price.toString(), listingPrice.toString());
+      const transaction = await contract.createToken(url, price, { value: listingPrice });
   
-      await transaction.wait();
-      console.log("Sale created:", transaction);
-      // navigate('/profile');
+      console.log("Transaction sent:", transaction.hash);
+      
+      // Wait for the transaction to be mined
+      const receipt = await transaction.wait();
+      console.log("Transaction mined. Block number:", receipt.blockNumber);
+  
+      // Log the entire receipt for debugging
+      console.log("Full receipt:", JSON.stringify(receipt, null, 2));
+  
+      // Check for events
+      const tokenCreatedEvent = receipt.logs.find(
+        log => log.fragment && log.fragment.name === 'TokenCreated'
+      );
+  
+      if (tokenCreatedEvent) {
+        const tokenId = tokenCreatedEvent.args.tokenId;
+        console.log("New token created with ID:", tokenId.toString());
+        return tokenId;
+      } else {
+        console.log("TokenCreated event not found in transaction logs");
+      }
+  
+      console.log("Could not determine tokenId from transaction receipt");
+      return null;
+  
     } catch (error) {
-      console.log("Error occurred while creating sale:", error);
+      console.error("Error occurred while creating sale:", error);
+      throw error;
     }
   };
   
@@ -255,38 +282,60 @@ export const NFTBazzarProvider = ({ children }) => {
 
   const fetchNFTs = async () => {
     try {
-        const provider = new JsonRpcProvider('http://127.0.0.1:8545/');
-        const contract = fetchContract(provider);
-        const data = await contract.fetchMarketItem();
-        
-        if (!Array.isArray(data)) {
-            console.log("Fetched data is not an array:", data);
-            return [];
-        }
-
-        const items = await Promise.all(
-            data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
-                const tokenURI = await contract.tokenURI(tokenId);
-                const { data: { image, name, description } } = await axios.get(tokenURI);
-                const price = ethers.utils.formatUnits(unformattedPrice.toString(), "ether");
-                return {
-                    price,
-                    tokenId: tokenId.toNumber(),
-                    seller,
-                    owner,
-                    image,
-                    name,
-                    description,
-                    tokenURI,
-                };
-            })
-        );
-        return items;
-    } catch (error) {
-        console.log("Error while Fetching NFTs:", error);
+      console.log("Fetching NFTs...");
+      const provider = new ethers.JsonRpcProvider();
+      console.log("Provider created");
+      const contract = fetchContract(provider);
+      console.log("Contract fetched");
+  
+      const data = await contract.fetchMarketItem();
+      console.log("Raw data from contract:", data);
+  
+      if (!data || data.length === 0) {
+        console.log("No items returned from contract");
         return [];
+      }
+  
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          console.log(`Processing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`Item ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            const price = ethers.formatUnits(item.price.toString(), "ether");
+            return {
+              price,
+              tokenId: tokenId.toString(),
+              seller: item.seller,
+              owner: item.owner,
+              image: metadata.image,
+              name: metadata.name,
+              description: metadata.description,
+              tokenURI,
+            };
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
+    } catch (error) {
+      console.error("Error while Fetching NFTs:", error);
+      return [];
     }
-};
+  };
 
 
 
