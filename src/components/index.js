@@ -11,7 +11,7 @@ import Trycard from './cards/Trycard';
 import Trendcard from './cards/Trendcard';
 import { Input } from './Input';
 import { Label } from './Label';
-import { Card3Dusage } from './cards/Card3Dusage';
+import Card3Dusage from '../components/cards/Card3Dusage';
 
 export {Header, Container,Collectioncard, Footer, Trycard,MainImgAni, Trendcard,ExploreItems,  AccountItems , CompanyItems, Button, Input, Label ,Card3Dusage}
 

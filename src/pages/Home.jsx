@@ -325,80 +325,66 @@ function Home() {
         {/* Bidding Section */}
 
         <ScrollAnimationItem>
-          <section className=" h-[100vh]">
-            <Container>
-              <div className="flex flex-col  justify-center min-h-screen ">
-                <div className="items-center flex justify-center">
-                  <h1 className=" font-logofont text-white dark:text-black text-3xl mb-8 ">
-                    Live Bidding{" "}
-                    <span className=" bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
-                      NFTs
-                    </span>
-                  </h1>
-                </div>
-                <div>
-                  <Swiper
-                    slidesPerView={1}
-                    spaceBetween={10}
-                    loop={true}
-                    autoplay={{
-                      delay: 2500,
-                      disableOnInteraction: false,
-                    }}
-                    breakpoints={{
-                      "@0.00": {
-                        slidesPerView: 1,
-                        spaceBetween: 10,
-                      },
-                      "@0.75": {
-                        slidesPerView: 2,
-                        spaceBetween: 20,
-                      },
-                      "@1.00": {
-                        slidesPerView: 3,
-                        spaceBetween: 40,
-                      },
-                      "@1.50": {
-                        slidesPerView: 3.5,
-                        spaceBetween: 50,
-                      },
-                    }}
-                    modules={[Autoplay]}
-                    className="mySwiper"
-                  >
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                    <SwiperSlide>
-                      <Card3Dusage />
-                    </SwiperSlide>
-                  </Swiper>
-                </div>
-              </div>
-            </Container>
-          </section>
-        </ScrollAnimationItem>
+  <section className="h-[100vh]">
+    <Container>
+      <div className="flex flex-col justify-center min-h-screen">
+        <div className="items-center flex justify-center">
+          <h1 className="font-logofont text-white dark:text-black text-3xl mb-8">
+            Live Bidding{" "}
+            <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
+              NFTs
+            </span>
+          </h1>
+        </div>
+        <div>
+          <Swiper
+            slidesPerView={1}
+            spaceBetween={7}
+            loop={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              "@0.00": {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              "@0.75": {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              "@1.00": {
+                slidesPerView: 3,
+                spaceBetween: 40,
+              },
+              "@1.50": {
+                slidesPerView: 3.5,
+                spaceBetween: 50,
+              },
+            }}
+            modules={[Autoplay]}
+            className="mySwiper"
+          >
+            {nfts.map((nft) => (
+              <SwiperSlide key={nft.tokenId}>
+                <Card3Dusage
+                  Name={nft.name}
+                  Creator={nft.seller}
+                  Price={nft.price}
+                  Image={nft.image}
+                  tokenId={nft.tokenId}
+                  description={nft.description}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </div>
+    </Container>
+  </section>
+</ScrollAnimationItem>
+
 
         {/*Top section*/}
         {/* bg-fixed bg-items bg-cover */}

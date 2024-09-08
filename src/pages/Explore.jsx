@@ -10,7 +10,7 @@ import {
 import mag from '../assets/Home/mag.svg'
 import TrendCard from "../components/cards/Trendcard";
 import Bidcard from "../components/cards/Bidcard";
-import {Card3Dusage} from "../components/cards/Card3Dusage"
+import Card3Dusage from '../components/cards/Card3Dusage';
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
