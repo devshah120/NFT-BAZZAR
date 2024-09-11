@@ -1,6 +1,7 @@
 import React from 'react'
 import Button from '../Button'
-function Trendcard({mimg,nftname,price,position}) {
+import { Link } from 'react-router-dom'
+function Trendcard({mimg,nftname,price,position,id}) {
   return (
     <div className=' ease-in transition-all border-2  rounded-2xl md:hover:border-sky-300 md:hover:dark:border-neutral-950'>
         

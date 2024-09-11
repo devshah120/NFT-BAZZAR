@@ -1,15 +1,17 @@
-import React, { useContext, useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { Container } from "../components"; // Assume Button is removed temporarily for testing
 import fig from "../assets/working/3759390.jpg";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import Button from "../components/Button";
 
 function NFT() {
   const { tokenId } = useParams();
   const location = useLocation();
   const { Name, Creator, Price, Image, description } = location.state || {};
   const { buyNFT, currentAccount } = useContext(NFTBazzarContext);
-
+  const [loader,setLoader] = useState(false)
+  const navigate = useNavigate()
   useEffect(() => {
     console.log("Component mounted. CurrentAccount:", currentAccount);
     console.log("NFT Data:", {
@@ -25,6 +27,7 @@ function NFT() {
   const handleBuyNFT = async () => {
     console.log("Buy button clicked");
     try {
+      setLoader(true)
       const nftData = {
         tokenId: tokenId,
         price: Price.toString(), // Ensure price is a string
@@ -32,8 +35,12 @@ function NFT() {
       console.log("Attempting to buy NFT with data:", nftData);
       await buyNFT(nftData);
       console.log("NFT purchase completed");
+      setLoader(false)
+      navigate("/")
+      alert("NFT purchase completed");
     } catch (error) {
       console.error("Error buying NFT:", error);
+      setLoader(false)
     }
   };
 
@@ -58,12 +65,14 @@ function NFT() {
                 <p>Token ID: {tokenId}</p>
 
                 {currentAccount.toLowerCase() !== Creator.toLowerCase() && (
-                  <button
+                  <Button
                     className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
                     onClick={handleBuyNFT}
                   >
-                    Buy Now
-                  </button>
+                    {
+                      loader? "Loading..." : "Buy Now"
+                    }
+                  </Button>
                 )}
 
                 {currentAccount.toLowerCase() === Creator.toLowerCase() && (

@@ -7,8 +7,10 @@ import { facebook,twit,insta,git } from '../assets/Footer'
 
 function Footer() {
   return (
-    <footer className='dark:bg-light-background bg-dark-background'>
+    <footer className=' '>
         <Container>
+        <div className=' w-full border-b-2 border-[#313148] my-5'></div>
+
             <div className='flex flex-col md:flex-row md:mx-10 '>
                 <div className=' flex flex-col items-center md:items-start md:w-1/2'>
                     <h1 className=' pb-[1px] text-white text-5xl  font-logofont dark:text-black mt-4'><span className=' bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient '>NFT</span> BAZZAR</h1>
