@@ -1,17 +1,40 @@
 "use client";
 import { cn } from "../utils/cn";
-import { AnimatePresence,useMotionValue, motion, useMotionTemplate } from "framer-motion";
-import React ,{ useState } from "react";
+import { AnimatePresence,useMotionValue,useScroll,useTransform,useSpring, motion } from "framer-motion";
+import React ,{ useState, useEffect ,useContext } from "react";
 import { Container } from "../components";
 import { Link } from "react-router-dom";
+import Card3Dusage from '../components/cards/Card3Dusage';
+import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 
-export const Collections = ({
-  className,
-  containerClassName,
-}) => {
+
+
+
+import { Swiper, SwiperSlide } from "swiper/react";
+
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/pagination";
+
+import { Autoplay } from "swiper/modules";
+
+// import nftsData from "../dataGathering/nftsData";
+
+
+export const Collections = () => {
   let mouseX = useMotionValue(0);
   let mouseY = useMotionValue(0);
-
+  const [nfts,setNfts] = useState([])
+  // useEffect(() => {
+  //   nftsData.getAllNfts()
+  //   .then((res) => {
+  //     setNfts(res.data);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   })
+  // }, []);
   function handleMouseMove({
     currentTarget,
     clientX,
@@ -23,42 +46,172 @@ export const Collections = ({
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
   }
+  const ref = React.useRef(null);
+  const { scrollYProgress ,scrollXProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const springConfig = { stiffness: 300, damping: 30, bounce: 100 };
+
+  const translateX = useSpring(
+    useTransform(scrollXProgress, [0, 1], [200, 0]),
+    springConfig
+  );
+  const translateXReverse = useSpring(
+    useTransform(scrollYProgress, [0, 1], [0, -1000]),
+    springConfig
+  );
+  const rotateX = useSpring(
+    useTransform(scrollYProgress, [0, 0.2], [15, 0]),
+    springConfig
+  );
+  const opacity = useSpring(
+    useTransform(scrollYProgress, [0, 0.2], [0.2, 1]),
+    springConfig
+  );
+  const rotateZ = useSpring(
+    useTransform(scrollYProgress, [0, 0.2], [20, 0]),
+    springConfig
+  );
+  const translateY = useSpring(
+    useTransform(scrollYProgress, [0, 0.2], [-850, 0]),
+    springConfig
+  );
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const { fetchNFTs } = useContext(NFTBazzarContext);
+  // const [nfts, setNfts] = useState([]);
+  const [nftsCopy, setNftsCopy] = useState([]);
+
+  useEffect(() => {
+    fetchNFTs().then((item) => {
+      setNfts(item.reverse());
+      setNftsCopy(item);
+      console.log(nfts);
+    });
+  }, []);
+
+  const { checkWalletConnected } = useContext(NFTBazzarContext);
+  useEffect(() => {
+    if (checkWalletConnected) {
+      checkWalletConnected();
+    } else {
+      console.log("No Know");
+    }
+  }, []);
+
   return (
     <main>
-        
-    <section
-      className={cn(
-        "relative h-[40rem] flex items-center bg-black dark:bg-white justify-center w-full group",
-        containerClassName
-      )}
-      onMouseMove={handleMouseMove}
-    ><Container>
-      <div className="absolute inset-0 bg-dot-thick-neutral-900 dark:bg-dot-thick-neutral-300  pointer-events-none" />
+        <section>
+        <div
+      ref={ref}
+      className=" h-auto overflow-hidden justify-center antialiased relative flex flex-col  [perspective:1000px] [transform-style:preserve-3d] text-white dark:text-black"
+    >
+      <Header123 />
       <motion.div
-        className="pointer-events-none bg-dot-thick-[#fff] dark:bg-dot-thick-indigo-900   absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100"
         style={{
-          WebkitMaskImage: useMotionTemplate`
-            radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
-              transparent 100%
-            )
-          `,
-          maskImage: useMotionTemplate`
-            radial-gradient(
-              200px circle at ${mouseX}px ${mouseY}px,
-              black 0%,
-              transparent 100%
-            )
-          `,    
+          rotateX,
+          rotateZ,
+          translateY,
+          translateX,
+          opacity,
         }}
-      />
-
-      <div className={cn("relative z-[3] text-4xl md:text-7xl flex flex-col gap-4 text-white font-bold dark:text-black", className)}><span>Start Your Collection Today: <br/> Explore a vast selection of  </span><span><Highlight></Highlight></span></div>
+        className=" -z-[1]"
+      >
+        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 mb-20">
+        <Swiper
+            slidesPerView={1}
+            spaceBetween={7}
+            loop={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              "@0.00": {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              "@0.75": {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              "@1.00": {
+                slidesPerView: 3,
+                spaceBetween: 40,
+              },
+              "@1.50": {
+                slidesPerView: 3.5,
+                spaceBetween: 50,
+              },
+            }}
+            modules={[Autoplay]}
+            className="mySwiper"
+          >
+            {nfts.map((nft) => (
+              <SwiperSlide key={nft.tokenId}>
+                <Card3Dusage
+                  Name={nft.name}
+                  Creator={nft.seller}
+                  Price={nft.price}
+                  Image={nft.image}
+                  tokenId={nft.tokenId}
+                  description={nft.description}
+                  owner={nft.owner}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
+        <motion.div className="flex flex-row  mb-20 space-x-20 ">
+        <Swiper
+            slidesPerView={1}
+            spaceBetween={7}
+            loop={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              "@0.00": {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              "@0.75": {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              "@1.00": {
+                slidesPerView: 3,
+                spaceBetween: 40,
+              },
+              "@1.50": {
+                slidesPerView: 3.5,
+                spaceBetween: 50,
+              },
+            }}
+            modules={[Autoplay]}
+            className="mySwiper"
+          >
+            {nfts.map((nft) => (
+              <SwiperSlide key={nft.tokenId}>
+                <Card3Dusage
+                  Name={nft.name}
+                  Creator={nft.seller}
+                  Price={nft.price}
+                  Image={nft.image}
+                  tokenId={nft.tokenId}
+                  description={nft.description}
+                  owner={nft.owner}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </motion.div>
+      </motion.div>
+    </div>
+        </section>
     
-      </Container></section>
 
       <Container><section
       className={cn(
@@ -66,7 +219,7 @@ export const Collections = ({
       )}>
       {items.map((item, idx) => (
         <Link
-          herf={item?.link}
+          to={item?.link}
           key={item?.link}
           className="relative group  block p-2 h-full w-full"
           onMouseEnter={() => setHoveredIndex(idx)}
@@ -131,62 +284,51 @@ export const Highlight = ({
   );
 };
 
-
+export const Header123 = () => {
+  return (
+    <div className="max-w-7xl relative mx-auto py-48 md:py-30 px-4 w-full left-0 top-0">
+      <div className={cn("relative z-[3] text-4xl md:text-7xl flex flex-col gap-4 text-white font-bold dark:text-black")}><span>Start Your Collection Today: <br/> Explore a vast selection of  </span><span><Highlight></Highlight></span></div>
+    </div>
+  );
+};
 export default Collections
-
-
-
-// import { cn } from "@/utils/cn";
-// import { AnimatePresence, motion } from "framer-motion";
-// import Link from "next/link";
-// import { useState } from "react";
-
-// export const HoverEffect = ({
-//   items,
-// }) => {
-//   let [hoveredIndex, setHoveredIndex] = useState(null);
-
-//   return (
-    
-//   );
-// };
 
 const items = [
     {
-      title: "Stripe",
+      title: "Art",
       description:
-        "A technology company that builds economic infrastructure for the internet.",
-      link: "https://stripe.com",
+        "Explore a diverse collection of unique digital art NFTs, showcasing various styles and creativity from emerging and established artists.",
+      link: "/collections/Art",
     },
     {
-      title: "Netflix",
+      title: "Gaming",
       description:
-        "A streaming service that offers a wide variety of award-winning TV shows, movies, anime, documentaries, and more on thousands of internet-connected devices.",
-      link: "https://netflix.com",
+        "The Gaming NFT collection features vibrant, dynamic illustrations of virtual reality, retro games, and futuristic worlds, capturing the essence of gaming's past, present, and future.",
+      link: "/collections/Gaming",
     },
     {
-      title: "Google",
+      title: "Meta-Verse",
       description:
-        "A multinational technology company that specializes in Internet-related services and products.",
-      link: "https://google.com",
+        "A collection of futuristic virtual reality landscapes, digital utopias, and advanced technology cityscapes.",
+      link: "/collections/Meta-Verse",
     },
     {
-      title: "Meta",
+      title: "Sport",
       description:
-        "A technology company that focuses on building products that advance Facebook's mission of bringing the world closer together.",
-      link: "https://meta.com",
+        "A dynamic collection capturing the excitement and intensity of various sports, from football to skiing, in vibrant illustrations.",
+      link: "/collections/Sport",
     },
     {
-      title: "Amazon",
+      title: "Magic",
       description:
-        "A multinational technology company focusing on e-commerce, cloud computing, digital streaming, and artificial intelligence.",
-      link: "https://amazon.com",
+        "Experience the mystical realm with our Magic NFT collection, featuring enchanting artworks of wizards, spells, and mythical creatures.",
+      link: "/collections/Magic",
     },
     {
-      title: "Microsoft",
+      title: "Abstract",
       description:
-        "A multinational technology company that develops, manufactures, licenses, supports, and sells computer software, consumer electronics, personal computers, and related services.",
-      link: "https://microsoft.com",
+        "Discover the Abstract NFT collection: a fusion of colors and shapes, offering a mesmerizing journey into the world of abstract art, where imagination meets innovation.",
+      link: "/collections/Abstract",
     },
   ];
 
@@ -197,7 +339,7 @@ export const Card = ({
   return (
     <div
       className={cn(
-        "rounded-2xl h-full w-full p-4 overflow-hidden bg-black border border-transparent dark:border-white/[0.2] group-hover:border-slate-700 relative z-20",
+        "rounded-2xl h-full w-full p-4 overflow-hidden  bg-fixed bg-items bg-cover border border-transparent dark:border-white/[0.2] group-hover:border-slate-700 relative z-20",
         className
       )}
     >

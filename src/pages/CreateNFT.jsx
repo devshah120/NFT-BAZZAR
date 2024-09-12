@@ -13,6 +13,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 // import { Router } from "react-router-dom";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import Loader from "../components/Loader";
 
 function CreateNFT() {
   const {uploadFileToIPFS,createNFT } = useContext(NFTBazzarContext);
@@ -24,11 +25,13 @@ function CreateNFT() {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
+  const [loader, setLoader] = useState(false);
 
   // const router=Router()
   const onSubmit = async (data) => {
     console.log(data);
     try {
+      setLoader(true);
       const Image = data.Image[0]; // Ensure Image is correctly extracted
       console.log(Image);
 
@@ -98,18 +101,25 @@ function CreateNFT() {
 
   const handleButtonClick = async () => {
     try {
+      setLoader(true);
       if (file) {
         const response=await uploadFileToIPFS(file);
         if (response.success==true) {
           console.log("Uploaded to IPFS link:-",response.pinataURL);
           
-          createNFT(name,description, price,response.pinataURL);
+          await createNFT(name,description, price,response.pinataURL);
         } // Call uploadToPinata with imageUrl
+        setLoader(false);
+        navigate("/")
+        alert("NFT Minted");
       } else {
         console.error("No image  available to upload.");
+        setLoader(false);
+
       }
     } catch (error) {
       console.error("Error uploading to Pinata:", error);
+      setLoader(false);
     }
   };
 
@@ -163,7 +173,7 @@ function CreateNFT() {
                 <LabelInputContainer>
                   <Label htmlFor="name">NFT Name</Label>
                   <Input
-                    placeholder="Durden"
+                    placeholder="NFT Name"
                     type="text"
                     {...register("Name")}
                     onChange={handleNameChange} // Handle name change
@@ -298,15 +308,25 @@ function CreateNFT() {
                   </select>
                 </motion.div>
               </LabelInputContainer>
-
-              <button
-                className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-                type="submit"
-                onClick={handleButtonClick}
-              >
-                Create Now &rarr;
-                <BottomGradient />
-              </button>
+              {
+                loader ? (<button
+                  className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 flex justify-center items-center gap-3 dark:to-zinc-900 to-neutral-600  dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                  type="submit"
+                  onClick={handleButtonClick}
+                  disabled
+                >
+                  <Loader /> <h1>Loading...</h1>
+                  <BottomGradient />
+                </button>) : (<button
+                  className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                  type="submit"
+                  onClick={handleButtonClick}
+                >
+                  Create Now &rarr;
+                  <BottomGradient />
+                </button>)
+              }
+              
 
               {/* <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
       

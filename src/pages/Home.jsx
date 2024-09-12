@@ -45,11 +45,13 @@ import NFTCategoryToggle from "../components/Profile";
 import { BackgroundGradientAnimation } from "../components/Animation/BackgroudGrediantAni";
 import { SparklesCore } from "../components/Animation/BottomSpartical";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
   const myRef = useRef(null);
   const isInView = useInView(myRef);
   const mainControl = useAnimation();
+  const navigate = useNavigate();
   const textVariants = {
     hidden: { opacity: 0 },
     visible: (i) => ({
@@ -173,58 +175,60 @@ function Home() {
       </section> */}
 
         {/* hero section */}
-        <ScrollAnimationItem>
-          <section className="h-[100vh] overflow-hidden">
-            {/* <BackgroundGradientAnimation> */}
-            <Container>
-              <motion.div
-                className=" w-full flex items-center flex-row justify-center min-h-screen "
-                // initial={{y:'90vw'}}
-                // animate={{y:0}}
-                // transition={{delay:0.1,type:'spring',stiffness:50}}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1, ease: "easeIn" }}
-              >
-                <div className=" flex justify-center flex-col items-center">
-                  <motion.h1
-                    className=" text-2xl sm:text-5xl font-extrabold text-white dark:text-slate-950 text-center"
-                    initial={{ opacity: 0, x: -100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY{" "}
-                  </motion.h1>
-
-                  <motion.h1
-                    className=" text-[120px] leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
-                    initial={{ opacity: 0, x: 200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    NFTS!
-                  </motion.h1>
-
-                  <div className="w-[40rem] h-40 relative">
-                    <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[2px] w-3/4 blur-sm" />
-                    <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-3/4" />
-                    <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[5px] w-1/4 blur-sm" />
-                    <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-1/4" />
-
-                    <SparklesCore
-                      background="transparent"
-                      minSize={0.9}
-                      maxSize={2}
-                      particleDensity={1000}
-                      className="w-full h-full"
-                      particleColor="#2196F3"
-                      ref={myRef}
-                    />
-
-                    <div className="absolute inset-0 w-full h-full dark:bg-white bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
-                  </div>
-
-                  {/* <motion.div className="relative mt-10 sm:w-[600px] rounded-xl dark:shadow-[0_0_10px_purple]"
+        <ScrollAnimationItem > 
+      
+      <section className="h-[100vh] overflow-hidden">
+          {/* <BackgroundGradientAnimation> */}
+        <Container>
+          <motion.div className=" w-full flex items-center flex-row justify-center min-h-screen " 
+            // initial={{y:'90vw'}}
+            // animate={{y:0}}
+            // transition={{delay:0.1,type:'spring',stiffness:50}}
+            initial = {{opacity: 0}}
+            animate ={{opacity: 1}}
+            transition={{delay:0.1,ease: "easeIn"}}
+            
+          >
+       
+              <div className=" flex justify-center flex-col items-center">
+                  
+              
+                        <motion.h1 className=" text-2xl sm:text-5xl font-extrabold text-white dark:text-slate-950 text-center"
+                        initial={{opacity: 0, x: -100}}
+                        animate={{opacity:1,x:0}}
+                        transition={{delay:0.1}}
+                        >
+                          DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY </motion.h1>
+                        
+                        <motion.h1 className=" text-[120px] leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
+                        initial={{opacity: 0, x: 200}}
+                        animate={{opacity:1,x:0}}
+                        transition={{delay:0.2}}
+                        >NFTS!</motion.h1>
+                      
+                          {/* <div className="w-[40rem] h-40 relative">
+                            
+                            <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[2px] w-3/4 blur-sm" />
+                            <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-3/4" />
+                            <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[5px] w-1/4 blur-sm" />
+                            <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-1/4" />
+                    
+                            
+                            <SparklesCore
+                              background="transparent"
+                              minSize={0.9}
+                              maxSize={2}
+                              particleDensity={1000}
+                              className="w-full h-full"
+                              particleColor="#2196F3" 
+                            />
+                    
+                            
+                            <div className="absolute inset-0 w-full h-full dark:bg-white bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
+                          </div> */}
+                        
+                  
+                        {/* <motion.div className="relative mt-10 sm:w-[600px] rounded-xl dark:shadow-[0_0_10px_purple]"
                         initial={{opacity: 0, x: -200}}
                         animate={{opacity:1,x:0}}
                         transition={{delay:0.3}}
@@ -239,12 +243,13 @@ function Home() {
                         <h3 className=" text-white dark:text-slate-950 text-center"><span className=" text-sky-300 dark:text-purple-900 dark:font-semibold">Popular searches:</span> cryptopunks, bored ape yacht club, moonbirds
                         </h3>
                       </motion.div> */}
-                </div>
-              </motion.div>
-            </Container>
-            {/* </BackgroundGradientAnimation> */}
-          </section>
-        </ScrollAnimationItem>
+              </div>
+          
+          </motion.div>
+        </Container>
+      {/* </BackgroundGradientAnimation> */}
+      </section>
+      </ScrollAnimationItem>
         {/* <motion.div
         className=" h-1  bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] animate-gradient"
         style={{ backgroundSize: "200% 200%" }}
@@ -402,80 +407,16 @@ function Home() {
                   </h1>
                 </div>
                 <div>
-                  <div className="grid md:grid-cols-4 gap-10 ">
-                    <Trendcard
-                      mimg={gsa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={1}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={big}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={2}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={cig}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={3}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={dig}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={4}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={eig}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={5}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={fig}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={6}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={asa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={7}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={bsa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={8}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={csa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={9}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={dsa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={10}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={esa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={11}
-                    ></Trendcard>
-                    <Trendcard
-                      mimg={fsa}
-                      nftname={"NFT Name"}
-                      price={"1.0014 ETH"}
-                      position={12}
-                    ></Trendcard>
-                  </div>
+                <div className="grid md:grid-cols-4 gap-10 ">
+
+{nfts.slice(0,12).map((nft,index) => (
+    
+   <Trendcard kii={index} mimg={nft.image} id={nft.tokenId}  nftname={nft.name} price={`${nft.price} ETH`} position={index+1}></Trendcard>
+  
+))}
+
+
+</div>
                 </div>
               </div>
             </Container>
@@ -507,7 +448,50 @@ function Home() {
                   </span>
                 </h1>
               </div>
-              <NFTCategoryToggle categories={categories} nfts={nfts} />
+              
+              <Swiper
+            slidesPerView={1}
+            spaceBetween={7}
+            loop={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              "@0.00": {
+                slidesPerView: 1,
+                spaceBetween: 10,
+              },
+              "@0.75": {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              "@1.00": {
+                slidesPerView: 3,
+                spaceBetween: 40,
+              },
+              "@1.50": {
+                slidesPerView: 3.5,
+                spaceBetween: 50,
+              },
+            }}
+            modules={[Autoplay]}
+            className="mySwiper"
+          >
+            {nfts.map((nft) => (
+              <SwiperSlide key={nft.tokenId}>
+                <Card3Dusage
+                  Name={nft.name}
+                  Creator={nft.seller}
+                  Price={nft.price}
+                  Image={nft.image}
+                  tokenId={nft.tokenId}
+                  description={nft.description}
+                  owner={nft.owner}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
             </Container>
           </motion.section>
         </ScrollAnimationItem>
@@ -552,7 +536,7 @@ function Home() {
                             </motion.span>
                           ))}
                       </div>
-                      <Button className="  mt-6 font-extrabold">
+                      <Button className="  mt-6 font-extrabold" onClick={() => navigate("/collections")}>
                         Discover Now
                       </Button>
                     </div>
