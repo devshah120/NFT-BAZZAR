@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { CardBody, CardContainer, CardItem } from "../cards/Card3D";
-import aimg from "../../assets/card/a.png";
+import bimg from "../../assets/card/a.png";
+import aimg from "../../assets/card/polygon-matic-logo.png";
 
 const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description,owner, className }) => {
   const trimAddress = (address) => {
@@ -30,7 +31,7 @@ const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description,owner, c
           {/* Created by */}
           <CardItem translateZ="60" className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300">
             <div className='flex gap-3 items-center mb-3'>
-              <img src={aimg} alt="" className='h-10 w-10 rounded-full' />
+              <img src={bimg} alt="" className='h-10 w-10 rounded-full' />
               <div>
                 <h6 className='text-xs text-[#838181] font-semibold'>Created By:</h6>
                 <h6 className='text-sm ease-in transition-all hover:text-[#28F0CC] font-bold text-[#212121] dark:text-white'>
@@ -45,8 +46,8 @@ const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description,owner, c
               <div className='flex flex-col justify-between items-center'>
                 <h6 className='text-xs text-[#838181] font-semibold'>Price</h6>
                 <div className='flex gap-2'>
-                  <img src={aimg} alt="" className='w-4'/>
-                  <h4 className='text-sm font-semibold dark:text-white text-[#212121]'>{Price}</h4>
+                  <img src={aimg} alt="" className='w-4'/> 
+                  <h4 className='text-sm font-semibold dark:text-white text-[#212121]'>{Price} MATIC</h4>
                 </div>
               </div>
             </CardItem>

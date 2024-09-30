@@ -60,9 +60,9 @@ function Footer() {
             </div>
                     <div className=' w-full border-b-2 border-[#313148] my-5'></div>
             <div className=' flex flex-col md:flex-row md:justify-between pb-5'>
-                <h1 className='text-dark-accent text-center md:text-left dark:text-light-accent'>@2024 NFT BAZZAR - Made By Dhruv Shah</h1>
+                <h1 className='text-dark-accent text-center md:text-left dark:text-light-accent'>@2024 NFT BAZZAR - Made By Dev Shah & Dhruv Shah</h1>
                 <div className=' flex flex-col md:flex-row items-center'>
-                    <h1 className=' text-dark-accent dark:text-light-accent'> Terms And Conditions </h1>
+                    <h1 className=' text-dark-accent dark:text-light-accent mx-4'> Terms And Conditions </h1> 
                     <h1 className=' text-dark-accent dark:text-light-accent'> Privacy Policy </h1>
                 </div>
             </div>

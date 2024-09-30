@@ -411,7 +411,7 @@ function Home() {
 
 {nfts.slice(0,12).map((nft,index) => (
     
-   <Trendcard kii={index} mimg={nft.image} id={nft.tokenId}  nftname={nft.name} price={`${nft.price} ETH`} position={index+1}></Trendcard>
+   <Trendcard kii={index} mimg={nft.image} id={nft.tokenId}  nftname={nft.name} price={`${nft.price} MATIC`} position={index+1}></Trendcard>
   
 ))}
 

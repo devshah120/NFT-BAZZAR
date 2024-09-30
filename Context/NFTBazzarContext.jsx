@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { NFTBazzarAddress, NFTBazzarABI } from "./constants";
 
-
+const POLYGON_AMOY_RPC_URL = "https://rpc-amoy.polygon.technology/";
 
 export const connectingWithSmartContract = async () => {
   try {
@@ -283,7 +283,7 @@ export const NFTBazzarProvider = ({ children }) => {
   const fetchNFTs = async () => {
     try {
       console.log("Fetching NFTs...");
-      const provider = new ethers.JsonRpcProvider();
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
       console.log("Provider created");
       const contract = fetchContract(provider);
       console.log("Contract fetched");

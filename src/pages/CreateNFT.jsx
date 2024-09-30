@@ -230,7 +230,7 @@ function CreateNFT() {
                 >
                   <div className="flex justify-between items-center">
                     <h1 className=" font-bold text-[#5a5a5a] text-sm">Price</h1>
-                    <h1>{price} ETH</h1>
+                    <h1>{price} MATIC</h1>
                   </div>
                   <div className="flex justify-between">
                     <h1 className=" font-bold text-[#5a5a5a] text-sm">
@@ -243,7 +243,7 @@ function CreateNFT() {
                     <h1 className=" font-bold text-[#5a5a5a] text-sm">
                       You will receive
                     </h1>
-                    <h1>{price-0.5} ETH</h1>
+                    <h1>{price-0.0025} MATIC</h1>
                   </div>
                 </div>
               </motion.div>
