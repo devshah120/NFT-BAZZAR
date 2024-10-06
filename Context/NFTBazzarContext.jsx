@@ -199,13 +199,20 @@ export const NFTBazzarProvider = ({ children }) => {
 
   const createNFT = async (name, description, price, image) => {
     if (!name || !description || !price || !image) {
-      console.log("Data is missing");
-      return;
+      throw new Error("Missing required fields");
     }
   
-    const data = JSON.stringify({ name, description, price, image });
-  
     try {
+      // Ensure price is a string and properly formatted
+      const formattedPrice = price.toString();
+      
+      const data = JSON.stringify({ 
+        name, 
+        description, 
+        price: formattedPrice,  // Store the original price in metadata
+        image 
+      });
+  
       const response = await axios({
         method: "POST",
         url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
@@ -219,16 +226,17 @@ export const NFTBazzarProvider = ({ children }) => {
       });
   
       const ipfsUrl = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
-      console.log("Uploaded to IPFS link:", ipfsUrl);
-  
-      const tokenId = await createSale(ipfsUrl, price);
-      if (tokenId) {
-        console.log("NFT created successfully with tokenId:", tokenId.toString());
-      } else {
-        console.log("NFT creation failed or tokenId could not be determined");
-      }
+      console.log("IPFS URL:", ipfsUrl);
+      console.log("Calling createSale with price:", formattedPrice);
+      
+      const tokenId = await createSale(ipfsUrl, formattedPrice);
+      return tokenId;
     } catch (error) {
       console.error("Error in creating NFT:", error);
+      if (error.response) {
+        throw new Error(`IPFS Error: ${error.response.data.message}`);
+      }
+      throw error;
     }
   };
 
@@ -236,27 +244,56 @@ export const NFTBazzarProvider = ({ children }) => {
     console.log("Creating sale for:", url, formInputPrice);
     
     try {
-      const price = ethers.parseUnits(formInputPrice.toString(), 18);
+      // Connect to contract
       const contract = await connectingWithSmartContract();
       if (!contract) {
         throw new Error("Failed to connect to smart contract");
       }
   
-      const listingPrice = ethers.parseUnits("0.0025", "ether");
+      // Get listing price from contract
+      const listingPrice = await contract.getListingPrice();
+      console.log("Listing price from contract:", ethers.formatEther(listingPrice), "MATIC");
   
-      console.log("Calling createToken with:", url, price.toString(), listingPrice.toString());
-      const transaction = await contract.createToken(url, price, { value: listingPrice });
+      // Convert price to Wei
+      const price = ethers.parseUnits(formInputPrice.toString(), 18);
+  
+      // Estimate gas before sending transaction
+      const gasEstimate = await contract.createToken.estimateGas(url, price, { 
+        value: listingPrice 
+      });
+  
+      // Add 20% buffer to gas estimate - properly handle BigInt
+      const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2));
+  
+      console.log("Transaction parameters:", {
+        url,
+        price: ethers.formatEther(price) + " MATIC",
+        listingPrice: ethers.formatEther(listingPrice) + " MATIC",
+        gasLimit: gasLimit.toString()
+      });
+  
+      // Send transaction with estimated gas limit
+      const transaction = await contract.createToken(url, price, {
+        value: listingPrice,
+        gasLimit,
+        // Polygon Amoy specific configurations
+        maxFeePerGas: ethers.parseUnits("100", "gwei"),
+        maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
+      });
   
       console.log("Transaction sent:", transaction.hash);
       
-      // Wait for the transaction to be mined
-      const receipt = await transaction.wait();
-      console.log("Transaction mined. Block number:", receipt.blockNumber);
+      // Wait for confirmation with timeout
+      const receipt = await Promise.race([
+        transaction.wait(),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Transaction timeout")), 60000)
+        )
+      ]);
   
-      // Log the entire receipt for debugging
-      console.log("Full receipt:", JSON.stringify(receipt, null, 2));
+      console.log("Transaction confirmed in block:", receipt.blockNumber);
   
-      // Check for events
+      // Find TokenCreated event
       const tokenCreatedEvent = receipt.logs.find(
         log => log.fragment && log.fragment.name === 'TokenCreated'
       );
@@ -265,20 +302,26 @@ export const NFTBazzarProvider = ({ children }) => {
         const tokenId = tokenCreatedEvent.args.tokenId;
         console.log("New token created with ID:", tokenId.toString());
         return tokenId;
-      } else {
-        console.log("TokenCreated event not found in transaction logs");
       }
   
-      console.log("Could not determine tokenId from transaction receipt");
-      return null;
+      throw new Error("TokenCreated event not found in transaction logs");
   
     } catch (error) {
-      console.error("Error occurred while creating sale:", error);
+      // Handle BigInt errors specifically
+      if (error instanceof TypeError && error.message.includes('BigInt')) {
+        console.error("BigInt calculation error. Please check all numeric values are properly converted.");
+      } else if (error.code === -32603) {
+        console.error("MetaMask RPC Error. Please check if you have enough MATIC and the correct network is selected");
+      } else if (error.message.includes("user rejected")) {
+        console.error("Transaction was rejected by the user");
+      } else if (error.message.includes("insufficient funds")) {
+        console.error("Insufficient MATIC to complete the transaction");
+      } else {
+        console.error("Error occurred while creating sale:", error);
+      }
       throw error;
     }
   };
-  
-  
 
   const fetchNFTs = async () => {
     try {

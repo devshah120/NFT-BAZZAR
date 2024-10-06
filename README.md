@@ -23,7 +23,7 @@ Users can mint NFTs, list them for sale, or put them up for auction, with flexib
 
 - **Low-Cost Transactions:** Enjoy fast and affordable transactions powered by the Polygon (Amoy) testnet, offering lower fees compared to Ethereum.
 
-- **Decentralized Storage:** FT data is stored on IPFS via Pinata, with smart contracts built using Solidity and OpenZeppelin ERC721 standards, ensuring secure NFT creation and trading.
+- **Decentralized Storage:** NFT data is stored on IPFS via Pinata, with smart contracts built using Solidity and OpenZeppelin ERC721 standards, ensuring secure NFT creation and trading.
 
 
 

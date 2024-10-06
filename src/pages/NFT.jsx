@@ -58,7 +58,7 @@ function NFT() {
               <div className="gap-4 flex flex-col">
                 <h1 className="font-semibold">Creator: {Creator}</h1>
                 <h1 className="text-4xl font-bold">{Name}</h1>
-                <h1 className="text-xm font-bold">Price: {Price} MATIC ~ ${Price*0.4}</h1>
+                <h1 className="text-xm font-bold">Price: ${Price} MATIC ~ ${(Price * 0.4).toFixed(2)}</h1>
                 <p className="text-xm font-light">
                   Description for {Name} - {description}
                 </p>
