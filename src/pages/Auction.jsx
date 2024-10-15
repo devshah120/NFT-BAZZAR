@@ -17,12 +17,12 @@ import "swiper/css/effect-cards";
 import { EffectCards,Autoplay } from "swiper/modules";
 function Auction() {
   const [nfts, setNfts] = useState([]);
-  const { fetchNFTs } = useContext(NFTBazzarContext);
+  const { fetchAuctionItems } = useContext(NFTBazzarContext);
   // const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
 
   useEffect(() => {
-    fetchNFTs().then((item) => {
+    fetchAuctionItems().then((item) => {
       setNfts(item.reverse());
       setNftsCopy(item);
       console.log(nfts);
@@ -99,14 +99,14 @@ function Auction() {
                   {nfts.map((nft) => (
                     <SwiperSlide key={nft.tokenId}>
                       <Card3Dusage
-                        Name={nft.name}
-                        Creator={nft.seller}
-                        Price={nft.price}
-                        Image={nft.image}
-                        tokenId={nft.tokenId}
-                        description={nft.description}
-                        owner={nft.owner}
-                      />
+                  Name={nft.name}
+                  Creator={nft.creator}
+                  Price={nft.minBid}
+                  Image={nft.image}
+                  tokenId={nft.tokenId}
+                  description={nft.description}
+                  owner={nft.owner}
+                />
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -213,8 +213,8 @@ function Auction() {
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
-                  Creator={nft.seller}
-                  Price={nft.price}
+                  Creator={nft.creator}
+                  Price={nft.minBid}
                   Image={nft.image}
                   tokenId={nft.tokenId}
                   description={nft.description}

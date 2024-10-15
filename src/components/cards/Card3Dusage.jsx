@@ -4,7 +4,7 @@ import { CardBody, CardContainer, CardItem } from "../cards/Card3D";
 import bimg from "../../assets/card/a.png";
 import aimg from "../../assets/card/polygon-matic-logo.png";
 
-const Card3Dusage = ({ Name, Creator, Price, Image, tokenId,description,owner, className }) => {
+const Card3Dusage = ({ Name="soham", Creator, Price, Image={bimg}, tokenId,description="soham",owner, className }) => {
   const trimAddress = (address) => {
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   };

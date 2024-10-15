@@ -197,7 +197,7 @@ export const NFTBazzarProvider = ({ children }) => {
       });
   };
 
-  const createNFT = async (name, description, price, image) => {
+  const createNFT = async (name, description, price, image, catagory) => {
     if (!name || !description || !price || !image) {
       throw new Error("Missing required fields");
     }
@@ -210,7 +210,8 @@ export const NFTBazzarProvider = ({ children }) => {
         name, 
         description, 
         price: formattedPrice,  // Store the original price in metadata
-        image 
+        image,
+        catagory
       });
   
       const response = await axios({
@@ -323,6 +324,75 @@ export const NFTBazzarProvider = ({ children }) => {
     }
   };
 
+  // Start auction functionality
+  const startAuction = async (tokenId, minPrice, auctionDuration) => {
+    try {
+      const contract = await connectingWithSmartContract();
+      if (!contract) return;
+
+      const price = ethers.parseUnits(minPrice.toString(), "ether");
+      // const durationInSeconds = auctionDuration * 60 * 60; // Convert hours to seconds
+      const durationInSeconds = auctionDuration * 60; // Convert minutes to seconds
+
+      const gasEstimate = await contract.startAuction.estimateGas(tokenId, price, durationInSeconds);
+      const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2)); // Add 20% buffer
+
+      const transaction = await contract.startAuction(tokenId, price, durationInSeconds, {
+        gasLimit,
+        maxFeePerGas: ethers.parseUnits("100", "gwei"),
+        maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
+      });
+
+      await transaction.wait();
+      console.log("Auction started for tokenId:", tokenId);
+    } catch (error) {
+      console.log("Error starting auction:", error);
+    }
+  };
+
+  // Place bid functionality
+  const placeBid = async (tokenId, bidAmount) => {
+    try {
+      const contract = await connectingWithSmartContract();
+      if (!contract) return;
+      console.log("contract",contract)
+      console.log("amou",bidAmount);
+      console.log("str",bidAmount.toString());
+      
+      const bidValue = ethers.parseUnits(bidAmount.toString(), "ether");
+      console.log("val",bidValue)
+      const transaction = await contract.bid(tokenId, { 
+        value: bidValue 
+      });
+      console.log("tran",transaction);
+      
+
+      await transaction.wait();
+      console.log("Bid placed on tokenId:", tokenId);
+    } catch (error) {
+      if (error.code === 'NON_REENTRANT') {
+        console.log("Non-reentrant function error");
+      } else {
+        console.log("Error placing bid:", error);
+      }
+    }
+  };
+
+  // End auction functionality
+  const endAuction = async (tokenId) => {
+    try {
+      const contract = await connectingWithSmartContract();
+      if (!contract) return;
+
+      const transaction = await contract.endAuction(tokenId);
+
+      await transaction.wait();
+      console.log("Auction ended for tokenId:", tokenId);
+    } catch (error) {
+      console.log("Error ending auction:", error);
+    }
+  };
+
   const fetchNFTs = async () => {
     try {
       console.log("Fetching NFTs...");
@@ -358,10 +428,15 @@ export const NFTBazzarProvider = ({ children }) => {
               tokenId: tokenId.toString(),
               seller: item.seller,
               owner: item.owner,
+              creator: item.creator,
               image: metadata.image,
               name: metadata.name,
               description: metadata.description,
+              catagory: metadata.catagory,
+              sold: item.sold,
               tokenURI,
+              onAuction: item.onAuction,
+              onSale:item.onSale
             };
           } catch (error) {
             console.error(`Error processing item ${index}:`, error);
@@ -380,45 +455,345 @@ export const NFTBazzarProvider = ({ children }) => {
     }
   };
 
-
-
-  useEffect(()=>{fetchNFTs();},[])
-
-  const fetchMyNFTsOrListedNFTs = async (type) => {
+  const fetchNftsByCat = async (cat) => {
     try {
-      const contract = await connectingWithSmartContract();
-      const data =
-        type == "fetchItemsListed"
-          ? await contract.fetchItemsListed()
-          : await contract.fetchMyNFT();
+      console.log("Fetching NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("Provider created");
+      const contract = fetchContract(provider);
+      console.log("Contract fetched");
+  
+      const data = await contract.fetchMarketItem();
+      console.log("Raw data from contract:", data);
+  
+      if (!data || data.length === 0) {
+        console.log("No items returned from contract");
+        return [];
+      }
+  
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          console.log(`Processing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`Item ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            const price = ethers.formatUnits(item.price.toString(), "ether");
+            if(cat === metadata.catagory){
+              return {
+                price,
+                tokenId: tokenId.toString(),
+                seller: item.seller,
+                owner: item.owner,
+                creator: item.creator,
+                image: metadata.image,
+                name: metadata.name,
+                description: metadata.description,
+                catagory: metadata.catagory,
+                sold: item.sold,
+                tokenURI,
+                onAuction: item.onAuction,
+                onSale:item.onSale
+              };
+            } else {
+              return null;
+            }
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
+    } catch (error) {
+      console.error("Error while Fetching NFTs:", error);
+      return [];
+    }
+  }
+
+  const fetchNftsByid = async (id) => {
+    try {
+      console.log("Fetching NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("Provider created");
+      const contract = fetchContract(provider);
+      console.log("Contract fetched");
+  
+      const data = await contract.fetchSingleItem(id);
+      console.log("Raw data from contract:", data);
+  
+      if (!data || data.length === 0) {
+        console.log("No items returned from contract");
+        return [];
+      }
+  
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          // console.log(`Processing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`Item ${index} has no tokenId:`, item);
+            return null;
+          }
+          console.log("rockstar id ",tokenId.toString())
+          console.log("star id",id);
+          
+          if(tokenId.toString() === id){
+            try {
+              const tokenURI = await contract.tokenURI(tokenId);
+              console.log(`TokenURI for ${tokenId}:`, tokenURI);
+              const { data: metadata } = await axios.get(tokenURI);
+              console.log(`Metadata for ${tokenId}:`, metadata);
+              const price = ethers.formatUnits(item.price.toString(), "ether");
+                return {
+                  price,
+                  tokenId: tokenId.toString(),
+                  seller: item.seller,
+                  owner: item.owner,
+                  creator: item.creator,
+                  image: metadata.image,
+                  name: metadata.name,
+                  description: metadata.description,
+                  catagory: metadata.catagory,
+                  sold: item.sold,
+                  tokenURI,
+                  onAuction: item.onAuction,
+                  onSale:item.onSale
+                };
+                
+            } catch (error) {
+              console.error(`Error processing item ${index}:`, error);
+              return null;
+            }
+
+          } else {
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+      
+  
+      return validItems;
+    } catch (error) {
+      console.error("Error while Fetching NFTs:", error);
+      return [];
+    }
+  }
+//   const endAuction = async (tokenId) => {
+//     try {
+//         const contract = await connectingWithSmartContract();
+        
+//         const transaction = await contract.endAuction(tokenId);
+//         await transaction.wait();
+//         console.log("Auction ended for tokenId:", tokenId);
+//     } catch (error) {
+//         console.error("Error ending auction:", error);
+//     }
+// };
+
+// Optionally: Use an interval or similar approach to check if auctions need to be ended automatically
+const fetchSingleAuctionItem = async(tokenId) => {
+  console.log("AFetching NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("AProvider created");
+      const contract = fetchContract(provider);
+      console.log("AContract fetched");
+  
+      const data = await contract.fetchSingleAuctionItem(tokenId);
+      console.log("ARaw auction data from contract:", data);
 
       const items = await Promise.all(
-        data.map(
-          async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+        data.map(async (item, index) => {
+          console.log(`AProcessing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`AItem ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const minBid = ethers.formatUnits(item.minBid.toString(), "ether");
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
             const tokenURI = await contract.tokenURI(tokenId);
-            const {
-              data: { image, name, description },
-            } = await axios.get(tokenURI);
-            const price = ethers.utils.formatUnits(
-              unformattedPrice.toString(),
-              "ether"
-            );
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const marketnft = await contract.fetchSingleItem(tokenId)
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            
+            return {
+              tokenId: tokenId.toString(),
+              owner: marketnft[0].owner,
+              creator: marketnft[0].creator,
+              image: metadata.image,
+              name: metadata.name,
+              description: metadata.description,
+              tokenURI,
+              onAuction:marketnft[0].onAuction,
+              onSale:item.onSale,
+              tokenId: tokenId.toString(),
+              seller: item.seller,
+              minBid,
+              highestBid,
+              highestBidder: item.highestBidder,
+              auctionEndTime: item.auctionEndTime,
+              active: item.active,
+            };
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
+
+}
+const fetchAuctionItems = async () => {
+      console.log("AFetching NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("AProvider created");
+      const contract = fetchContract(provider);
+      console.log("AContract fetched");
+  
+      const data = await contract.fetchAuctionItem();
+      console.log("ARaw auction data from contract:", data);
+
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          console.log(`AProcessing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`AItem ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const minBid = ethers.formatUnits(item.minBid.toString(), "ether");
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const marketnft = await contract.fetchSingleItem(tokenId)
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            
+            return {
+              tokenId: tokenId.toString(),
+              owner: marketnft[0].owner,
+              creator: marketnft[0].creator,
+              image: metadata.image,
+              name: metadata.name,
+              description: metadata.description,
+              tokenURI,
+              onAuction:marketnft[0].onAuction,
+              onSale:item.onSale,
+              tokenId: tokenId.toString(),
+              seller: item.seller,
+              minBid,
+              highestBid,
+              highestBidder: item.highestBidder,
+              auctionEndTime: item.auctionEndTime,
+              active: item.active,
+            };
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
+
+}
+const checkAndEndAuctions = async () => {
+    // Fetch all ongoing auctions and check their end time
+    // This could be a batch call or loop through a list of active auctions
+    const ongoingAuctions = await fetchAuctionItems(); // Implement this function to fetch your auctions
+  console.log("Ongoing auctions:", ongoingAuctions);
+    for (const auction of ongoingAuctions) {
+        if (auction.auctionEndTime <= Date.now() / 1000) { // Assuming endTime is in seconds
+            await endAuction(auction.tokenId);
+            console.log(`tokenId ${auction.tokenId} nu puru`);
+            
+        }
+    }
+};
+
+// Call this function periodically (e.g., using setInterval)
+setInterval(checkAndEndAuctions, 60000); // Check every minute
+
+
+
+  // useEffect(()=>{fetchNFTs();},[])
+
+  const fetchMyNFTsOrListedNFTs = async (currentAccount) => {
+    try {
+      // const contract = await connectingWithSmartContract();
+      // const data = await contract.fetchItemsListed(currentAccount)
+      // console.log("Fetching own NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("Provider created",provider);
+      const contract = fetchContract(provider);
+      console.log("Contract fetched");
+
+      const data = await contract.fetchItemsListed(currentAccount);
+      console.log("Raw data from contract:", data);
+
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          console.log(`Processing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`Item ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            const price = ethers.formatUnits(item.price.toString(), "ether");
             return {
               price,
-              tokenId: tokenId.toNumber(),
-              seller,
-              owner,
-              image,
-              name,
-              description,
+              tokenId: tokenId.toString(),
+              seller: item.seller,
+              owner: item.owner,
+              creator: item.creator,
+              image: metadata.image,
+              name: metadata.name,
+              description: metadata.description,
               tokenURI,
+              sold:item.sold
             };
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
           }
-        )
+        })
       );
-      return items;
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
     } catch (error) {
-      console.log("Error while fetching Listed NFT");
+      console.log("Error while fetching Listed NFT",error);
     }
   };
 
@@ -442,9 +817,16 @@ export const NFTBazzarProvider = ({ children }) => {
         checkWalletConnected,
         connectWallet,
         uploadToPinata,
+        startAuction,
+        placeBid,
+        endAuction,
         createNFT,
         fetchNFTs,
         fetchMyNFTsOrListedNFTs,
+        fetchAuctionItems,
+        fetchNftsByCat,
+        fetchNftsByid,
+        fetchSingleAuctionItem,
         buyNFT,
         uploadFileToIPFS,
         uploadJSONToIPFS,

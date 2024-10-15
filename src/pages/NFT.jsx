@@ -9,7 +9,7 @@ function NFT() {
   const { tokenId } = useParams();
   const location = useLocation();
   const { Name, Creator, Price, Image, description } = location.state || {};
-  const { buyNFT, currentAccount } = useContext(NFTBazzarContext);
+  const { buyNFT, currentAccount,placeBid } = useContext(NFTBazzarContext);
   const [loader,setLoader] = useState(false)
   const navigate = useNavigate()
   useEffect(() => {
@@ -22,7 +22,7 @@ function NFT() {
       Image,
       description,
     });
-  }, [currentAccount, tokenId, Name, Creator, Price, Image, description]);
+  }, [currentAccount]);
 
   const handleBuyNFT = async () => {
     console.log("Buy button clicked");
@@ -30,10 +30,10 @@ function NFT() {
       setLoader(true)
       const nftData = {
         tokenId: tokenId,
-        price: Price.toString(), // Ensure price is a string
+        bidAmount: "0.03", // Ensure price is a string
       };
       console.log("Attempting to buy NFT with data:", nftData);
-      await buyNFT(nftData);
+      await placeBid(tokenId,"0.03");
       console.log("NFT purchase completed");
       setLoader(false)
       navigate("/")

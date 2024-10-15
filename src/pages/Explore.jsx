@@ -163,9 +163,9 @@ export const Explore = () => {
               filteredNfts.map((nft) => (
                 <Card3Dusage
                   key={nft.tokenId}
-                  id={nft.tokenId}
+                  tokenId={nft.tokenId}
                   Name={nft.name}
-                  Creator={nft.seller}
+                  Creator={nft.creator}
                   Price={nft.price}
                   Image={nft.image}
                 />

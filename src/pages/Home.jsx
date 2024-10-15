@@ -375,7 +375,7 @@ function Home() {
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
-                  Creator={nft.seller}
+                  Creator={nft.owner}
                   Price={nft.price}
                   Image={nft.image}
                   tokenId={nft.tokenId}
@@ -482,7 +482,7 @@ function Home() {
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
-                  Creator={nft.seller}
+                  Creator={nft.creator}
                   Price={nft.price}
                   Image={nft.image}
                   tokenId={nft.tokenId}
@@ -544,54 +544,31 @@ function Home() {
                   <div className="lg:w-1/2  items-center justify-center flex">
                     <div className="flex items-center space-x-6 lg:space-x-8">
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6">
-                        <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all">
-                          <img
-                            src={asa}
-                            className="h-full w-full rounded-lg object-cover object-center "
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={bsa}
-                            className="h-full w-full rounded-lg object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={csa}
-                            alt=""
-                            className="h-full rounded-lg w-full object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={dsa}
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all  ">
-                          <img
-                            src={esa}
-                            className="h-full w-full rounded-lg object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                          <img
-                            src={fsa}
-                            alt=""
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all  ">
-                          <img
-                            src={gsa}
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
+                      <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
+                      <img src={asa} className="h-full w-full rounded-lg object-cover object-center "/>
+                    </div>
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
+                      <img src={bsa} className="h-full w-full rounded-lg object-cover object-center"/>
+                    </div>
+                  </div>
+                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
+                      <img src={csa} alt="" className="h-full rounded-lg w-full object-cover object-center"/>
+                    </div>
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg  hover:scale-110 ease-in transition-all ">
+                      <img src={dsa} className="h-full w-full  rounded-lg object-cover object-center"/>
+                    </div>
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
+                      <img src={esa} className="h-full w-full rounded-lg object-cover object-center"/>
+                    </div>
+                  </div>
+                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
+                      <img src={fsa} alt="" className="h-full w-full  rounded-lg object-cover object-center"/>
+                    </div>
+                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
+                      <img src={gsa} className="h-full w-full  rounded-lg object-cover object-center"/>
+                    </div>
                       </div>
                     </div>
                   </div>

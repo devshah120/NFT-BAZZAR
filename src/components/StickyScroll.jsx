@@ -1,223 +1,132 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import React, {  useRef, useState, useContext, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
-import fsa from "../assets/card/g.jpg";
+import { useNavigate } from "react-router-dom";
 import fig from "../assets/working/3759390.jpg";
-import asa from "../assets/card/c.jpg";
-import bsa from "../assets/card/hh.jpg";
-import csa from "../assets/card/d.jpg";
-import dsa from "../assets/card/ee.jpg";
-import esa from "../assets/card/f.jpg";
-import Button from "./Button";
+
+import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import { useSelector } from "react-redux";
 import CountdownTimer from "../components/Countdown";
 import Container from "./Container";
-import NFTCategoryToggle from "./Profile";
+import Button from "./Button";
+import { Input } from "./Input";
 
 export const StickyScroll = ({
-  content,
+
   contentClassName,
+  nftData
 }) => {
-  const [activeCard, setActiveCard] = React.useState(0);
+  const trimAddress = (address) => {
+    return `${address}`;
+  };
+  const navigate = useNavigate()
+  const [activeCard, setActiveCard] =useState(0);
+  const [bid, setBid] =useState();
+  const [nftAuctionData,setNftAuctionData] = useState();
+  const [loader,setLoader] = useState();
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    // uncomment line 22 and comment line 23 if you DONT want the overflow container and want to have it change on the entire page scroll
-    // target: ref
-    container: ref,
-    offset: ["start start", "end start"],
-  });
-  const cardLength = content.length;
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const cardsBreakpoints = content.map((_, index) => index / cardLength);
-    const closestBreakpointIndex = cardsBreakpoints.reduce(
-      (acc, breakpoint, index) => {
-        const distance = Math.abs(latest - breakpoint);
-        if (distance < Math.abs(latest - cardsBreakpoints[acc])) {
-          return index;
-        }
-        return acc;
-      },
-      0
-    );
-    setActiveCard(closestBreakpointIndex);
-  });
-
-  const backgroundColors = [
-    "var(--slate-900)",
-    "var(--black)",
-    "var(--neutral-900)",
-  ];
-  const linearGradients = [
-    "linear-gradient(to bottom right, var(--cyan-500), var(--emerald-500))",
-    "linear-gradient(to bottom right, var(--pink-500), var(--indigo-500))",
-    "linear-gradient(to bottom right, var(--orange-500), var(--yellow-500))",
-  ];
-
-  const [backgroundGradient, setBackgroundGradient] = useState(
-    linearGradients[0]
-  );
-
+  const pricee = nftData.price
+  const tokenId = nftData.tokenId
+  console.log(nftData);
+  
+  const user = useSelector((state) => state.auth.userData)
+  console.log("userData", user)
+  
+  const { buyNFT,placeBid,fetchSingleAuctionItem } = useContext(NFTBazzarContext);
   useEffect(() => {
-    setBackgroundGradient(linearGradients[activeCard % linearGradients.length]);
-  }, [activeCard]);
-
-
-  const categories = ["OnSale", "Owned", "Created", "Collection", "Activity"];
-
-  const nfts = [
-    {
-      id: 1,
-      name: "NFT 1",
-      image: asa,
-      description: "Description for NFT 1",
-      category: "OnSale",
-    },
-    {
-      id: 2,
-      name: "NFT 2",
-      image: bsa,
-      description: "Description for NFT 2",
-      category: "Owned",
-    },
-    {
-      id: 3,
-      name: "NFT 3",
-      image: csa,
-      description: "Description for NFT 3",
-      category: "Created",
-    },
-    {
-      id: 7,
-      name: "NFT 3",
-      image: dsa,
-      description: "Description for NFT 3",
-      category: "Collection",
-    },
-    {
-      id: 8,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 4,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 5,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 6,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    // Add more NFT objects here
-  ];
- 
-  const content1 = [
-    {
-      title: "Collaborative Editing",
-      description:
-        "Work together in real time with your team, clients, and stakeholders. Collaborate on documents, share ideas, and make decisions quickly. With our platform, you can streamline your workflow and increase productivity.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
-          Collaborative Editing
-        </div>
-      ),
-    },
-    {
-      title: "Real time changes",
-      description:
-        "See changes as they happen. With our platform, you can track every modification in real time. No more confusion about the latest version of your project. Say goodbye to the chaos of version control and embrace the simplicity of real-time updates.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-          dknclzcisv
-        </div>
-      ),
-    },
-    {
-      title: "Version control",
-      description:
-        "Experience real-time updates and never stress about version control again. Our platform ensures that you're always working on the most recent version of your project, eliminating the need for constant manual updates. Stay in the loop, keep your team aligned, and maintain the flow of your work without any interruptions.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-          Version control
-        </div>
-      ),
-    },
-    {
-      title: "Running out of content",
-      description:
-        "Experience real-time updates and never stress about version control again. Our platform ensures that you're always working on the most recent version of your project, eliminating the need for constant manual updates. Stay in the loop, keep your team aligned, and maintain the flow of your work without any interruptions.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
-          Running out of content
-        </div>
-      ),
-    },
-  ];
-
-
+    if(nftData.onAuction){
+      fetchSingleAuctionItem(nftData.tokenId).then((item) => {
+        setNftAuctionData(item[0]);
+        console.log("auction item in scroll", item[0]);
+        });
+    }
+  },[])
+  const handleBuyNFT = async () => {
+    console.log("Buy button clicked");
+    try { 
+      setLoader(true)
+      const nftData = {
+        tokenId: tokenId,
+        price: pricee, // Ensure price is a string
+      };
+      console.log("Attempting to buy NFT with data:", nftData);
+      await buyNFT(nftData);
+      console.log("NFT purchase completed");
+      setLoader(false)
+      navigate("/")
+      alert("NFT purchase completed");
+    } catch (error) {
+      console.error("Error buying NFT:", error);
+      setLoader(false)
+    }
+  };
+  const righttime = new Date().getTime();
+  const countdown = nftAuctionData?.auctionEndTime !== undefined 
+  ? (nftAuctionData.auctionEndTime.toString() * 1000) - righttime 
+  : "";
+  console.log("countdown",countdown);
+  console.log("righttime",righttime);
+  
+  const handlePlaceBid = async (e) => {
+    console.log("Buy button clicked");
+    console.log("bid",bid);
+    
+    if(bid && bid > nftAuctionData?.highestBid && bid > nftAuctionData?.minBid){
+    try {
+      setLoader(true)
+      const nftData = {
+        tokenId: tokenId,
+        bidAmount: bid, // Ensure price is a string
+      };
+      console.log("Attempting to bid NFT with data:", nftData);
+      await placeBid(tokenId,nftData.bidAmount);
+      console.log("NFT purchase completed");
+      setLoader(false)
+      navigate("/")
+      alert("bid successfully");
+    } catch (error) {
+      console.error("Error in biding NFT:", error);
+      setLoader(false)
+    }
+    } else if(bid > nftAuctionData?.highestBid || bid > nftAuctionData?.minBid){
+      alert("Please enter a valid bid and make sure it is greater than the current highest bid and the minimum bid")
+    }
+  }
   return (
     
-
-
-
-    <motion.div
-      animate={{
-        backgroundColor: backgroundColors[activeCard % backgroundColors.length],
-      }}
-      // className=" overflow-y-auto no-scrollbar h-[100vh] relative space-x-10 rounded-md "
-      ref={ref}
-    >
+      nftData ? (
+        <motion.div>
       <Container>
-        <div className=" overflow-y-auto no-scrollbar h-[100vh] relative space-x-10 rounded-md flex ">
-      <div className="div w-2/3 relative flex items-start px-4">
+        <div className=" overflow-y-auto no-scrollbar md:h-[100vh] relative md:space-x-10 rounded-md flex flex-col md:flex-row ">
+      <div className="div md:w-2/3 relative flex items-start px-4">
         <div className="max-w-2xl">
           <div className=" w-full flex justify-center mb-5">
         <motion.img  
           initial={{ opacity: 0, x: -200 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
-          src={fig}
+          src={nftData.image}
           alt=""
           className=" mt-4 mb-4 h-[600px] w-[600px] rounded-xl "
           /></div>
           <div className=" w-full h-0 border-b-2 mb-5"></div>
-          <h1 className=" text-white text-2xl font-extrabold mb-2">Description :</h1>
-          <h1 className=" text-white text-lg font-light">
-           Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem
-           quaerat quos, animi velit, mollitia voluptate asperiores
-           repudiandae, adipisci ex maxime incidunt tempora est sed.
-           Magni, voluptatibus? Adipisci similique a nulla ea quibusdam
-           assumenda deserunt nesciunt est sunt voluptatum non illum,
-           delectus beatae voluptatibus quidem perspiciatis ullam officia
-           asperiores recusandae voluptate!
+          <h1 className=" text-white dark:text-black text-2xl font-extrabold mb-2">Description :</h1>
+          <h1 className=" text-white text-lg dark:text-black font-light">
+           {nftData.description}
          </h1>
-          <div className="h-40" />
+          <div className="md:h-40" />
         </div>
       </div>
       <div
         // style={{ background: backgroundGradient }}
         className={cn(
-          "hidden lg:block w-1/3 my-4 rounded-md text-white top-10 sticky",
+          "block md:w-1/3 my-4 rounded-md md:px-0 px-4 text-white dark:text-black md:top-10 sticky",
           contentClassName
         )}
       >
         <div className=" flex flex-col  gap-6 ">
-              <motion.div
+        <motion.div
                 initial={{ opacity: 0, x: 200 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
@@ -225,12 +134,10 @@ export const StickyScroll = ({
               >
                 <div className=" flex gap-3 items-center">
                   <img src={fig} alt="" className=" h-7 w-7 rounded-full" />
-                  <h1 className=" font-semibold">Dhruv Shah</h1>
+                  <h1 className=" font-semibold">{trimAddress(nftData.owner)}</h1>
                 </div>
-                <h1 className=" text-3xl font-bold">#NFT NAME</h1>
-                <h1 className=" text-xm text-[#656565] font-bold">
-                  Royalties <span className=" rounded bg-sky-500 text-white px-1"> 0% </span>
-                </h1>
+                <h1 className=" text-3xl font-bold">{nftData.name}</h1>
+
                 <div className=" flex flex-row mt-5 gap-[50px]">
                   <div className=" flex gap-3 items-center mb-3">
                     <img src={fig} alt="" className=" h-10 w-10 rounded" />
@@ -239,7 +146,30 @@ export const StickyScroll = ({
                         Creator
                       </h6>
                       <h6 className=" text-sm ease-in transition-all  hover:text-[#28F0CC] font-bold">
+                      {trimAddress(nftData.creator)}
+                      </h6>
+                    </div>
+                  </div>
+                  {/* <div className=" flex gap-3 items-center mb-3">
+                    <img src={fig} alt="" className=" h-10 w-10 rounded" />
+                    <div>
+                      <h6 className=" text-xsfont-semibold">
+                        Owened By:
+                      </h6>
+                      <h6 className=" text-sm ease-in transition-all  hover:text-[#28F0CC] font-bold">
                         Dhruv Shah
+                      </h6>
+                    </div>
+                  </div> */}
+                </div>
+                <div className=" flex flex-row mt-5 gap-[50px]">
+                  <div className=" flex gap-3 items-center mb-3">
+                    <div>
+                      <h6 className=" text-lg   font-semibold">
+                        Price:
+                      </h6>
+                      <h6 className=" text-xl ease-in transition-all  hover:text-[#28F0CC] font-bold">
+                      {`${nftData.price} MATIC`}
                       </h6>
                     </div>
                   </div>
@@ -256,25 +186,112 @@ export const StickyScroll = ({
                   </div> */}
                 </div>
               </motion.div>
-
               <motion.div
                 initial={{ opacity: 0, x: 200 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
-            
-                className=" flex gap-6 border rounded-md w-full flex-col   bg-transparent mt-4 ">
-                <div className="flex flex-col  md:justify-center gap-6 m-4">
-                  <div className=" flex flex-col justify-center">
-                    <h1 className=" text-[#6d6d6d] font-extrabold">price</h1>
-                    <h1>10 ETH</h1>
-                  </div>
-                  <div className="">
-                    <h1>Auction Ends In</h1>
-                    <CountdownTimer initialSeconds={12000} />
-                  </div>
+                className=" gap-2 flex flex-col"
+              >
+              {nftData.onSale && nftData.onAuction && (
+                user.MetaHash.toLowerCase() !== nftData.owner.toLowerCase() && (
+                <motion.div
+                  initial={{ opacity: 0, x: 200 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
+              
+                  className=" flex gap-6 border rounded-md w-full flex-col   bg-transparent mt-4 ">
+                  <div className="flex flex-col  md:justify-center gap-6 m-4">
+                    <div className=" flex flex-col justify-center">
+                      <h1 className=" text-[#6d6d6d] font-extrabold">HighestBid</h1>
+                      <h1>{`${nftAuctionData?.highestBid} MATIC`}</h1>
+                      <h1 className=" text-[#6d6d6d] font-extrabold">HighestBidder</h1>
+                      <h1>{`${trimAddress(nftAuctionData?.highestBidder)}`}</h1>
+                    </div>
+                    <div className="">
+                      <h1>Auction Ends In</h1>
+                      <CountdownTimer initialSeconds={Math.floor(countdown/1000)} />
+                    </div>
+                    {user.MetaHash.toLowerCase() === nftAuctionData?.highestBidder.toLowerCase() ? (
+                      <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
+                        You are the highest bidder!
+                      </div>
+                    ) : (<div>
+                    <Input
+                      placeholder="place Bid"
+                      type="text"
+                      value={bid}
+                      onChange={(e) => setBid(e.target.value)}
+                    />
+                      <Button
+                        className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
+                        onClick={handlePlaceBid}
+                      >
+                        {
+                      loader? "Loading..." : "Place Bid"
+                    }
+                      </Button>
+                    </div>)}
+                    
 
-                </div>
-              </motion.div>
+                  </div>
+                </motion.div>)
+              )}
+              {nftData.onSale && nftData.onAuction && (
+                user.MetaHash.toLowerCase() === nftData.owner.toLowerCase() && (
+                  <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
+                    Your nft on auction
+                  </div>
+                )
+              )}
+              {nftData.onSale && !nftData.onAuction && (
+                user.MetaHash.toLowerCase() === nftData.owner.toLowerCase() && (
+                  <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
+                    Your nft on sale
+                  </div>
+                )
+              )}
+              {nftData.onSale && !nftData.onAuction && (
+                user.MetaHash.toLowerCase() !== nftData.owner.toLowerCase() && (
+                  <Button
+                    className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
+                    onClick={handleBuyNFT}
+                  >
+                      {
+                      loader? "Loading..." : "Buy Now"
+                      }
+                  </Button>
+                  
+                )
+              )}
+              {!nftData.onSale && !nftData.onAuction && (
+                user.MetaHash.toLowerCase() === nftData.owner.toLowerCase() && (
+                  <Button
+                    className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
+                    // onClick={handleBuyNFT}
+                  >
+                    resell
+                  </Button>
+                )
+              )}
+              {/* {currentAccount.toLowerCase() !== nftData.creator.toLowerCase() && (
+                  <Button
+                    className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
+                    // onClick={handleBuyNFT}
+                  >
+                    
+                      {}
+                    
+                  </Button>
+                )}
+
+                {user.MetaHash.toLowerCase() === nftData.creator.toLowerCase() && (
+                  <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
+                    You Cannot Buy
+                  </div>
+                )} */}
+                </motion.div>
+
+              
                   {/* <Button className="  md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
                     Place Bid
                   </Button> */}
@@ -283,6 +300,13 @@ export const StickyScroll = ({
       </div>
       </Container>
     </motion.div>
+      ) : (
+        <div>Loading NFT data...</div> // Or a placeholder
+      )
+
+
+
+    
   );
 };
 export default StickyScroll;

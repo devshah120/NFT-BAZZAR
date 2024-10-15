@@ -16,13 +16,18 @@ import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import Loader from "../components/Loader";
 
 function CreateNFT() {
-  const {uploadFileToIPFS,createNFT } = useContext(NFTBazzarContext);
+  const {uploadFileToIPFS,createNFT,startAuction } = useContext(NFTBazzarContext);
   const [price, setPrice] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [royalties, setRoyalties] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const [file, setFile] = useState(null);
+  const [auction, setAuction] = useState(false); // Toggle auction mode
+  const [startingBid, setStartingBid] = useState("");
+  const [auctionDuration, setAuctionDuration] = useState("");
+  const [catagory, setCatagory] = useState("Art");
+  const [reservePrice, setReservePrice] = useState("");
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
   const [loader, setLoader] = useState(false);
@@ -99,6 +104,10 @@ function CreateNFT() {
     setDescription(event.target.value); 
   };
 
+  const handleSelectChange = (event) => {
+    setCatagory(event.target.value); // Update state with the selected value
+  };
+
   const handleButtonClick = async () => {
     try {
       setLoader(true);
@@ -106,12 +115,21 @@ function CreateNFT() {
         const response=await uploadFileToIPFS(file);
         if (response.success==true) {
           console.log("Uploaded to IPFS link:-",response.pinataURL);
+           console.log("cata", catagory)
+           const tokenId = await createNFT(name,description, price,response.pinataURL,catagory);
+           if (!auction && tokenId) {
+            alert("NFT minted");
+           }
+           if (auction && tokenId) {
+            await startAuction(tokenId,price,auctionDuration);
+            alert("NFT Auction Started");
+           }
           
-          await createNFT(name,description, price,response.pinataURL);
-        } // Call uploadToPinata with imageUrl
+        }
+        // Call uploadToPinata with imageUrl
         setLoader(false);
         navigate("/")
-        alert("NFT Minted");
+        
       } else {
         console.error("No image  available to upload.");
         setLoader(false);
@@ -191,7 +209,7 @@ function CreateNFT() {
                   value={description}
                 />
               </LabelInputContainer>
-              <LabelInputContainer className="mb-4">
+              {/* <LabelInputContainer className="mb-4">
                 <Label htmlFor="price">NFT Price</Label>
                 <Input
                   placeholder="Enter Ammount"
@@ -200,8 +218,65 @@ function CreateNFT() {
                   onChange={handlePriceChange}
                   value={price}
                 />
-              </LabelInputContainer>
+              </LabelInputContainer> */}
+              {/* Toggle Auction Mode */}
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  checked={auction}
+                  onChange={() => setAuction(!auction)}
+                  className="mr-2"
+                />
+                <Label>Create as Auction</Label>
+              </div>
 
+              {/* Auction-Specific Fields */}
+              {auction && (
+                <>
+                  <LabelInputContainer className="mb-4">
+                    <Label htmlFor="startingBid">Starting Bid (MATIC)</Label>
+                    <Input
+                      placeholder="Starting Bid"
+                      type="text"
+                      value={startingBid}
+                      onChange={(e) => setStartingBid(e.target.value)}
+                    />
+                  </LabelInputContainer>
+
+                  <LabelInputContainer className="mb-4">
+                    <Label htmlFor="auctionDuration">Auction Duration (in minutes)</Label>
+                    <Input
+                      placeholder="Duration"
+                      type="text"
+                      value={auctionDuration}
+                      onChange={(e) => setAuctionDuration(e.target.value)}
+                    />
+                  </LabelInputContainer>
+
+                  <LabelInputContainer className="mb-4">
+                    <Label htmlFor="reservePrice">Reserve Price (MATIC)</Label>
+                    <Input
+                      placeholder="Reserve Price"
+                      type="text"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                    />
+                  </LabelInputContainer>
+                </>
+              )}
+
+              {!auction && (
+                <LabelInputContainer className="mb-4">
+                  <Label htmlFor="price">NFT Price (MATIC)</Label>
+                  <Input
+                    placeholder="Enter Amount"
+                    type="text"
+                    {...register("Price")}
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </LabelInputContainer>
+              )}
               <motion.div
                 style={{
                   background: useMotionTemplate`
@@ -247,24 +322,6 @@ function CreateNFT() {
                   </div>
                 </div>
               </motion.div>
-
-              <LabelInputContainer className="mb-8">
-                <Label htmlFor="royalties">NFT Royalties</Label>
-                <Input
-                  placeholder="Royalties %"
-                  type="text"
-                  {...register("Royalties")}
-                />
-              </LabelInputContainer>
-              {/* <LabelInputContainer className="mb-8">
-                <Label htmlFor="category">NFT Category</Label>
-                <Input
-                  id="category"
-                  placeholder="Choose Any One"
-                  type="text"
-                  {...register("Token_ID")}
-                />
-              </LabelInputContainer> */}
               <LabelInputContainer className="mb-8">
                 <Label htmlFor="category">NFT Category</Label>
                 <motion.div
@@ -285,7 +342,10 @@ function CreateNFT() {
                   <select
                     name="cars"
                     id="cars"
-                    {...register("Token_ID")}
+                    {...register("catagory")}
+                    // onSelect={}
+                    value={catagory}
+                    onChange={handleSelectChange}
                     className={cn(
                       `flex flex-col w-full border-none bg-gray-50 rounded-lg dark:bg-zinc-800 text-black dark:text-white shadow-input  p-3 text-base  file:border-0 file:bg-transparent 
           file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
@@ -326,42 +386,6 @@ function CreateNFT() {
                   <BottomGradient />
                 </button>)
               }
-              
-
-              {/* <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
-      
-              <div className="flex flex-col space-y-4">
-                <button
-                  className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                  type="submit"
-                >
-                  <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                  <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                    GitHub
-                  </span>
-                  <BottomGradient />
-                </button>
-                <button
-                  className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                  type="submit"
-                >
-                  <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                  <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                    Google
-                  </span>
-                  <BottomGradient />
-                </button>
-                <button
-                  className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-                  type="submit"
-                >
-                  <IconBrandOnlyfans className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-                  <span className="text-neutral-700 dark:text-neutral-300 text-sm">
-                    Instagram
-                  </span>
-                  <BottomGradient />
-                </button>
-              </div> */}
             </form>
           </div>
           <div>

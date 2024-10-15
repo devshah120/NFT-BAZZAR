@@ -79,26 +79,24 @@ export const Collections = () => {
   );
 
   const [hoveredIndex, setHoveredIndex] = useState(null);
-  const { fetchNFTs } = useContext(NFTBazzarContext);
+  const { fetchMyNFTsOrListedNFTs } = useContext(NFTBazzarContext);
   // const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  const { checkWalletConnected, currentAccount } =  useContext(NFTBazzarContext);
 
   useEffect(() => {
-    fetchNFTs().then((item) => {
-      setNfts(item.reverse());
-      setNftsCopy(item);
-      console.log(nfts);
+    console.log( currentAccount)
+    fetchMyNFTsOrListedNFTs(currentAccount).then((item) => {
+    setNfts(item.reverse());
+    setNftsCopy(item);
+    console.log(nfts);
     });
-  }, []);
-
-  const { checkWalletConnected } = useContext(NFTBazzarContext);
-  useEffect(() => {
     if (checkWalletConnected) {
       checkWalletConnected();
     } else {
       console.log("No Know");
     }
-  }, []);
+  }, [currentAccount]);
 
   return (
     <main>
@@ -152,7 +150,7 @@ export const Collections = () => {
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
-                  Creator={nft.seller}
+                  Creator={nft.creator}
                   Price={nft.price}
                   Image={nft.image}
                   tokenId={nft.tokenId}
@@ -197,7 +195,7 @@ export const Collections = () => {
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
-                  Creator={nft.seller}
+                  Creator={nft.creator}
                   Price={nft.price}
                   Image={nft.image}
                   tokenId={nft.tokenId}
