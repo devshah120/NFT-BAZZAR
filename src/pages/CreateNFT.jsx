@@ -16,7 +16,7 @@ import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import Loader from "../components/Loader";
 
 function CreateNFT() {
-  const {uploadFileToIPFS,createNFT,startAuction } = useContext(NFTBazzarContext);
+  const {uploadFileToIPFS,createNFT,startAuction,placeOnSale } = useContext(NFTBazzarContext);
   const [price, setPrice] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -116,15 +116,14 @@ function CreateNFT() {
         if (response.success==true) {
           console.log("Uploaded to IPFS link:-",response.pinataURL);
            console.log("cata", catagory)
-           const tokenId = await createNFT(name,description, price,response.pinataURL,catagory);
-           if (!auction && tokenId) {
-            alert("NFT minted");
-           }
-           if (auction && tokenId) {
-            await startAuction(tokenId,price,auctionDuration);
+           if (auction) {
+            const onAuction = auction
+            await createNFT(name,description, price,response.pinataURL,catagory,onAuction,auctionDuration);
             alert("NFT Auction Started");
+           }else {
+            await createNFT(name,description, price,response.pinataURL,catagory);
+            alert("NFT created");
            }
-          
         }
         // Call uploadToPinata with imageUrl
         setLoader(false);

@@ -17,7 +17,7 @@ import {
 } from "../components";
 import StickyScroll from "../components/StickyScroll";
 import { useParams } from "react-router-dom";
-import nftsData from "../dataGathering/nftsData"
+import NftsData from "../dataGathering/nftsData"
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Card3Dusage } from "../components";
 // Import Swiper styles
@@ -26,6 +26,8 @@ import "swiper/css/pagination";
 
 import { Autoplay } from "swiper/modules";
 function Item() {
+  const nftss = useSelector((state) => state.nfts.nftList)
+
   const {tokenId} = useParams()
   const [nftData,setNftData] = useState()
   const [nftDataCat,setNftDataCat] = useState()
@@ -36,16 +38,23 @@ function Item() {
 
   // get nfts data
   useEffect(() => {
-    fetchNftsByid(tokenId).then((item) => {
-    setNftData(item[0]);
-    console.log("item", item[0]);
-      if(item[0]){
-        fetchNftsByCat(item[0].catagory).then((item) => {
-          setNftDataCat(item.reverse());
-          });
-      }
-    });
-  }, []);
+    // fetchNftsByid(tokenId).then((item) => {
+    // setNftData(item[0]);
+    // console.log("item", item[0]);
+    //   if(item[0]){
+    //     fetchNftsByCat(item[0].catagory).then((item) => {
+    //       setNftDataCat(item.reverse());
+    //       });
+    //   } 
+    // });
+    console.log(tokenId);
+    
+    console.log("nftdata from item", NftsData.getNftById(nftss,tokenId));
+    
+    setNftData(NftsData.getNftById(nftss,tokenId));
+    setNftDataCat(NftsData.getNftsByNftCategory(nftss,tokenId));
+
+  }, [nftss]);
 
   // useEffect(() => {
   //     nftsData.getNft(id)
@@ -79,7 +88,6 @@ function Item() {
   //       }
   //   })
 // },[id])
-
 
 
   return (

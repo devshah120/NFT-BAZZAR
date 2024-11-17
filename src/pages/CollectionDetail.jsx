@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Container } from "../components";
 import { useParams } from "react-router-dom";
-import nftsData from "../dataGathering/nftsData";
+import NftsData from "../dataGathering/nftsData";
 import Card3Dusage from "../components/cards/Card3Dusage";
 import Trendcard from "../components/cards/Trendcard";
 import ScrollAnimationItem from "../components/Animation/PageAnimation";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
-
+import { useSelector } from "react-redux";
 
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,6 +17,7 @@ import "swiper/css/pagination";
 
 import { Autoplay } from "swiper/modules";
 function CollectionDetail() {
+  const nftss = useSelector((state) => state.nfts.nftList)
   const [nfts, setNfts] = useState([]);
   const { cat } = useParams();
   console.log(cat);
@@ -25,10 +26,10 @@ function CollectionDetail() {
 
   // get nfts data
   useEffect(() => {
-    fetchNftsByCat(cat).then((item) => {
-    setNfts(item.reverse());
-    console.log(nfts);
-    });
+    // fetchNftsByCat(cat).then((item) => {
+      // console.log(nfts);
+      // });
+      setNfts(NftsData.getNftsByCategory(nftss,cat));
   }, []);
 
   return (

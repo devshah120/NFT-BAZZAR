@@ -36,7 +36,7 @@ export const fetchContract = (signerOrProvider) => {
 
 export const NFTBazzarContext = React.createContext();
 
-const title = "Hello me is here";
+
 
 export const NFTBazzarProvider = ({ children }) => {
   const title = "Hello me is here";
@@ -196,8 +196,8 @@ export const NFTBazzarProvider = ({ children }) => {
         };
       });
   };
-
-  const createNFT = async (name, description, price, image, catagory) => {
+  
+  const createNFT = async (name, description, price, image, catagory,onAuction = false,auctionDuration = 0) => {
     if (!name || !description || !price || !image) {
       throw new Error("Missing required fields");
     }
@@ -230,7 +230,7 @@ export const NFTBazzarProvider = ({ children }) => {
       console.log("IPFS URL:", ipfsUrl);
       console.log("Calling createSale with price:", formattedPrice);
       
-      const tokenId = await createSale(ipfsUrl, formattedPrice);
+      const tokenId = await createSale(ipfsUrl, formattedPrice, onAuction, auctionDuration);
       return tokenId;
     } catch (error) {
       console.error("Error in creating NFT:", error);
@@ -241,7 +241,7 @@ export const NFTBazzarProvider = ({ children }) => {
     }
   };
 
-  const createSale = async (url, formInputPrice) => {
+  const createSale = async (url, formInputPrice, onAuction, auctionDuration) => {
     console.log("Creating sale for:", url, formInputPrice);
     
     try {
@@ -259,7 +259,7 @@ export const NFTBazzarProvider = ({ children }) => {
       const price = ethers.parseUnits(formInputPrice.toString(), 18);
   
       // Estimate gas before sending transaction
-      const gasEstimate = await contract.createToken.estimateGas(url, price, { 
+      const gasEstimate = await contract.createToken.estimateGas(url, price, onAuction, auctionDuration, { 
         value: listingPrice 
       });
   
@@ -274,7 +274,7 @@ export const NFTBazzarProvider = ({ children }) => {
       });
   
       // Send transaction with estimated gas limit
-      const transaction = await contract.createToken(url, price, {
+      const transaction = await contract.createToken(url, price, onAuction, auctionDuration, {
         value: listingPrice,
         gasLimit,
         // Polygon Amoy specific configurations
@@ -292,12 +292,16 @@ export const NFTBazzarProvider = ({ children }) => {
         )
       ]);
   
-      console.log("Transaction confirmed in block:", receipt.blockNumber);
+      console.log("Transaction confirmed in block:", receipt);
+      console.log("Transaction confirmed in logs:", receipt.logs);
   
       // Find TokenCreated event
       const tokenCreatedEvent = receipt.logs.find(
         log => log.fragment && log.fragment.name === 'TokenCreated'
       );
+      console.log("tokenCreatedEvent",tokenCreatedEvent);
+      console.log("tokenCreatedEvent args",tokenCreatedEvent.args);
+      
   
       if (tokenCreatedEvent) {
         const tokenId = tokenCreatedEvent.args.tokenId;
@@ -323,32 +327,208 @@ export const NFTBazzarProvider = ({ children }) => {
       throw error;
     }
   };
+ 
+  // const createNFT = async (name, description, price, image, catagory) => {
+  //   if (!name || !description || !price || !image) {
+  //     throw new Error("Missing required fields");
+  //   }
+  
+  //   try {
+  //     // Ensure price is a string and properly formatted
+  //     const formattedPrice = price.toString();
+      
+  //     const data = JSON.stringify({ 
+  //       name, 
+  //       description, 
+  //       price: formattedPrice,  // Store the original price in metadata
+  //       image,
+  //       catagory
+  //     });
+  
+  //     const response = await axios({
+  //       method: "POST",
+  //       url: "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+  //       data: data,
+  //       headers: {
+  //         pinata_api_key: "a2482c96ee25ab63c6dc",
+  //         pinata_secret_api_key:
+  //           "af9269e66a07f9b638f57ede4622865125904a894787681ae653d3faa863ee7e",
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  
+  //     const ipfsUrl = `https://gateway.pinata.cloud/ipfs/${response.data.IpfsHash}`;
+  //     console.log("IPFS URL:", ipfsUrl);
+  //     console.log("Calling createSale with price:", formattedPrice);
+      
+  //     const tokenId = await createSale(ipfsUrl, formattedPrice);
 
-  // Start auction functionality
-  const startAuction = async (tokenId, minPrice, auctionDuration) => {
-    try {
-      const contract = await connectingWithSmartContract();
-      if (!contract) return;
+  //     return tokenId;
+  //   } catch (error) {
+  //     console.error("Error in creating NFT:", error);
+  //     if (error.response) {
+  //       throw new Error(`IPFS Error: ${error.response.data.message}`);
+  //     }
+  //     throw error;
+  //   }
+  // };
 
-      const price = ethers.parseUnits(minPrice.toString(), "ether");
-      // const durationInSeconds = auctionDuration * 60 * 60; // Convert hours to seconds
-      const durationInSeconds = auctionDuration * 60; // Convert minutes to seconds
+  // const createSale = async (url, formInputPrice) => {
+  //   console.log("Creating sale for:", url, formInputPrice);
+    
+  //   try {
+  //     // Connect to contract
+  //     const contract = await connectingWithSmartContract();
+  //     if (!contract) {
+  //       throw new Error("Failed to connect to smart contract");
+  //     }
+  //     console.log("Connected to smart contract", contract);
+  
+  //     // Get listing price from contract
+  //     console.log("Listing price from before contract:", "MATIC");
+  //     const listingPrice = await contract.getListingPrice();
+  //     console.log("listingprice", listingPrice);
+      
+  //     console.log("Listing price from after contract:", ethers.formatEther(listingPrice), "MATIC");
+  
+  //     // Convert price to Wei
+  //     const price = ethers.parseUnits(formInputPrice.toString(), 18);
+  
+  //     // Estimate gas before sending transaction
+  //     const gasEstimate = await contract.createToken.estimateGas(url, price, { 
+  //       value: listingPrice 
+  //     });
+  
+  //     // Add 20% buffer to gas estimate - properly handle BigInt
+  //     const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2));
+  
+  //     console.log("Transaction parameters:", {
+  //       url,
+  //       price: ethers.formatEther(price) + " MATIC",
+  //       listingPrice: ethers.formatEther(listingPrice) + " MATIC",
+  //       gasLimit: gasLimit.toString()
+  //     });
+  
+  //     // Send transaction with estimated gas limit
+  //     const transaction = await contract.createToken(url, price, {
+  //       value: listingPrice,
+  //       gasLimit,
+  //     });
 
-      const gasEstimate = await contract.startAuction.estimateGas(tokenId, price, durationInSeconds);
-      const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2)); // Add 20% buffer
+  //     return transaction;
+  
+  //     // console.log("Transaction sent:", transaction.hash);
+      
+  //     // Wait for confirmation with timeout
+  //     // const receipt = await Promise.race([
+  //     //   transaction.wait(),
+  //     //   new Promise((_, reject) => 
+  //     //     setTimeout(() => reject(new Error("Transaction timeout")), 60000)
+  //     //   )
+  //     // ]);
+  
+  //     // console.log("Transaction confirmed in block:", receipt.blockNumber);
+  
+  //     // // Find TokenCreated event
+  //     // const tokenCreatedEvent = receipt.logs.find(
+  //     //   log => log.fragment && log.fragment.name === 'TokenCreated'
+  //     // );
+  
+  //     // if (tokenCreatedEvent) {
+  //     //   const tokenId = tokenCreatedEvent.args.tokenId;
+  //     //   console.log("New token created with ID:", tokenId.toString());
+  //     //   return tokenId;
+  //     // }
+  
+  //     throw new Error("TokenCreated event not found in transaction logs");
+  
+  //   } catch (error) {
+  //     // Handle BigInt errors specifically
+  //     if (error instanceof TypeError && error.message.includes('BigInt')) {
+  //       console.error("BigInt calculation error. Please check all numeric values are properly converted.");
+  //     } else if (error.code === -32603) {
+  //       console.error("MetaMask RPC Error. Please check if you have enough MATIC and the correct network is selected");
+  //     } else if (error.message.includes("user rejected")) {
+  //       console.error("Transaction was rejected by the user");
+  //     } else if (error.message.includes("insufficient funds")) {
+  //       console.error("Insufficient MATIC to complete the transaction");
+  //     } else {
+  //       console.error("Error occurred while creating sale:", error);
+  //     }
+  //     throw error;
+  //   }
+  // };
 
-      const transaction = await contract.startAuction(tokenId, price, durationInSeconds, {
-        gasLimit,
-        maxFeePerGas: ethers.parseUnits("100", "gwei"),
-        maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
-      });
+  // const placeOnSale = async (tokenId, formInputPrice ) => {
+  //   // const price = ethers.parseUnits(formInputPrice.toString(), 18);
+  //   try {
+  //     const contract = await connectingWithSmartContract();
+  //     if (!contract) return;
 
-      await transaction.wait();
-      console.log("Auction started for tokenId:", tokenId);
-    } catch (error) {
-      console.log("Error starting auction:", error);
-    }
-  };
+
+  //     const listingPrice = await contract.getListingPrice();
+  //     console.log("listingprice", listingPrice);
+
+  //     // Convert price to Wei
+  //     const price = ethers.parseUnits(formInputPrice.toString(), 18);
+  
+  //     // Estimate gas before sending transaction
+  //     const gasEstimate = await contract.createToken.estimateGas(url, price, { 
+  //       value: listingPrice 
+  //     });
+  
+  //     // Add 20% buffer to gas estimate - properly handle BigInt
+  //     const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2));
+
+  //     // Send transaction with estimated gas limit
+  //     const transaction = await contract.createMarketItem(url, price, {
+  //       value: listingPrice,
+  //       gasLimit,
+  //       // Polygon Amoy specific configurations
+  //       maxFeePerGas: ethers.parseUnits("100", "gwei"),
+  //       maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
+  //     });
+
+  //     const receipt = await Promise.race([
+  //       transaction.wait(),
+  //       new Promise((_, reject) => 
+  //         setTimeout(() => reject(new Error("Transaction timeout")), 60000)
+  //       )
+  //     ]);
+
+  //     console.log("Transaction confirmed in block:", receipt.blockNumber);
+
+  //     console.log("sale started for tokenId:", tokenId);
+  //   } catch (error) {
+  //     console.log("Error starting auction:", error);
+  //   }
+  // }
+
+  // // Start auction functionality
+  // const startAuction = async (tokenId, minPrice, auctionDuration) => {
+  //   try {
+  //     const contract = await connectingWithSmartContract();
+  //     if (!contract) return;
+
+  //     const price = ethers.parseUnits(minPrice.toString(), "ether");
+  //     // const durationInSeconds = auctionDuration * 60 * 60; // Convert hours to seconds
+  //     const durationInSeconds = auctionDuration * 60; // Convert minutes to seconds
+
+  //     const gasEstimate = await contract.startAuction.estimateGas(tokenId, price, durationInSeconds);
+  //     const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2)); // Add 20% buffer
+
+  //     const transaction = await contract.startAuction(tokenId, price, durationInSeconds, {
+  //       gasLimit,
+  //       maxFeePerGas: ethers.parseUnits("100", "gwei"),
+  //       maxPriorityFeePerGas: ethers.parseUnits("30", "gwei"),
+  //     });
+
+  //     await transaction.wait();
+  //     console.log("Auction started for tokenId:", tokenId);
+  //   } catch (error) {
+  //     console.log("Error starting auction:", error);
+  //   }
+  // };
 
   // Place bid functionality
   const placeBid = async (tokenId, bidAmount) => {
@@ -393,6 +573,109 @@ export const NFTBazzarProvider = ({ children }) => {
     }
   };
 
+  // Resell NFT functionality
+const reSellItem = async (tokenId, price, onAuction = false, auctionDuration = 0) => {
+  try {
+    const contract = await connectingWithSmartContract();
+    if (!contract) return;
+
+    // Convert price to ethers (assuming price is provided in ether units)
+    const listingPrice = await contract.getListingPrice();  // Get the listing price from the contract
+    const resalePrice = ethers.parseUnits(price.toString(), 18);
+
+    const gasEstimate = await contract.reSellItem.estimateGas(tokenId, resalePrice, onAuction, auctionDuration, { 
+      value: listingPrice 
+    });
+
+    // Add 20% buffer to gas estimate - properly handle BigInt
+    const gasLimit = BigInt(Math.floor(Number(gasEstimate) * 1.2));
+
+    // Call reSellItem function on the contract
+    const transaction = await contract.reSellItem(
+      tokenId,
+      resalePrice,
+      onAuction,
+      auctionDuration,
+      { value: listingPrice } // Ensure the listing price is sent with the transaction
+    );
+ 
+    await transaction.wait();
+    console.log(`NFT with tokenId ${tokenId} has been re-listed for resale/auction.`);
+  } catch (error) {
+    console.log("Error reselling item:", error);
+  }
+};
+
+
+  // Fetch all nfts
+  const fetchAllNFTs = async () => {
+    try {
+      console.log("Fetching NFTs...");
+      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+      console.log("Provider created");
+      const contract = fetchContract(provider);
+      console.log("Contract fetched");
+  
+      const data = await contract.fetchAllItems();
+      console.log("Raw data from contract:", data);
+  
+      if (!data || data.length === 0) {
+        console.log("No items returned from contract");
+        return [];
+      }
+  
+      const items = await Promise.all(
+        data.map(async (item, index) => {
+          console.log(`Processing item ${index}:`, item);
+          const tokenId = item._tokenId || item.tokenId;
+          if (!tokenId) {
+            console.log(`Item ${index} has no tokenId:`, item);
+            return null;
+          }
+          try {
+            const tokenURI = await contract.tokenURI(tokenId);
+            console.log(`TokenURI for ${tokenId}:`, tokenURI);
+            const { data: metadata } = await axios.get(tokenURI);
+            console.log(`Metadata for ${tokenId}:`, metadata);
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
+            const price = ethers.formatUnits(item.price.toString(), "ether");
+            return {
+              price,
+              tokenId: tokenId.toString(),
+              seller: item.seller,
+              owner: item.owner,
+              creator: item.creator,
+              image: metadata.image,
+              name: metadata.name,
+              description: metadata.description,
+              catagory: metadata.catagory,
+              sold: item.sold,
+              tokenURI,
+              onAuction: item.onAuction,
+              onSale:item.onSale,
+              auctionEndTime: item.auctionEndTime.toString(),
+              highestBid,
+              highestBidder: item.highestBidder,
+            };
+          } catch (error) {
+            console.error(`Error processing item ${index}:`, error);
+            return null;
+          }
+        })
+      );
+  
+      const validItems = items.filter(item => item !== null);
+      console.log("Processed items:", validItems);
+  
+      return validItems;
+    } catch (error) {
+      console.error("Error while Fetching NFTs:", error);
+      return [];
+    }
+  };
+
+
+  // Fetch onSale nft
   const fetchNFTs = async () => {
     try {
       console.log("Fetching NFTs...");
@@ -422,6 +705,7 @@ export const NFTBazzarProvider = ({ children }) => {
             console.log(`TokenURI for ${tokenId}:`, tokenURI);
             const { data: metadata } = await axios.get(tokenURI);
             console.log(`Metadata for ${tokenId}:`, metadata);
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
             const price = ethers.formatUnits(item.price.toString(), "ether");
             return {
               price,
@@ -436,7 +720,10 @@ export const NFTBazzarProvider = ({ children }) => {
               sold: item.sold,
               tokenURI,
               onAuction: item.onAuction,
-              onSale:item.onSale
+              onSale:item.onSale,
+              auctionEndTime: item.auctionEndTime,
+              highestBid,
+              highestBidder: item.highestBidder,
             };
           } catch (error) {
             console.error(`Error processing item ${index}:`, error);
@@ -484,6 +771,7 @@ export const NFTBazzarProvider = ({ children }) => {
             console.log(`TokenURI for ${tokenId}:`, tokenURI);
             const { data: metadata } = await axios.get(tokenURI);
             console.log(`Metadata for ${tokenId}:`, metadata);
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
             const price = ethers.formatUnits(item.price.toString(), "ether");
             if(cat === metadata.catagory){
               return {
@@ -499,7 +787,10 @@ export const NFTBazzarProvider = ({ children }) => {
                 sold: item.sold,
                 tokenURI,
                 onAuction: item.onAuction,
-                onSale:item.onSale
+                onSale:item.onSale,
+                auctionEndTime: item.auctionEndTime,
+                highestBid,
+                highestBidder: item.highestBidder,
               };
             } else {
               return null;
@@ -555,6 +846,8 @@ export const NFTBazzarProvider = ({ children }) => {
               const { data: metadata } = await axios.get(tokenURI);
               console.log(`Metadata for ${tokenId}:`, metadata);
               const price = ethers.formatUnits(item.price.toString(), "ether");
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
+
                 return {
                   price,
                   tokenId: tokenId.toString(),
@@ -568,7 +861,10 @@ export const NFTBazzarProvider = ({ children }) => {
                   sold: item.sold,
                   tokenURI,
                   onAuction: item.onAuction,
-                  onSale:item.onSale
+                  onSale:item.onSale,
+                  auctionEndTime: item.auctionEndTime,
+                  highestBid,
+                  highestBidder: item.highestBidder,
                 };
                 
             } catch (error) {
@@ -592,6 +888,7 @@ export const NFTBazzarProvider = ({ children }) => {
       return [];
     }
   }
+
 //   const endAuction = async (tokenId) => {
 //     try {
 //         const contract = await connectingWithSmartContract();
@@ -605,108 +902,105 @@ export const NFTBazzarProvider = ({ children }) => {
 // };
 
 // Optionally: Use an interval or similar approach to check if auctions need to be ended automatically
-const fetchSingleAuctionItem = async(tokenId) => {
-  console.log("AFetching NFTs...");
-      const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
-      console.log("AProvider created");
-      const contract = fetchContract(provider);
-      console.log("AContract fetched");
+// const fetchSingleAuctionItem = async(tokenId) => {
+//   console.log("AFetching NFTs...");
+//       const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
+//       console.log("AProvider created");
+//       const contract = fetchContract(provider);
+//       console.log("AContract fetched");
   
-      const data = await contract.fetchSingleAuctionItem(tokenId);
-      console.log("ARaw auction data from contract:", data);
+//       const data = await contract.fetchSingleAuctionItem(tokenId);
+//       console.log("ARaw auction data from contract:", data);
 
-      const items = await Promise.all(
-        data.map(async (item, index) => {
-          console.log(`AProcessing item ${index}:`, item);
-          const tokenId = item._tokenId || item.tokenId;
-          if (!tokenId) {
-            console.log(`AItem ${index} has no tokenId:`, item);
-            return null;
-          }
-          try {
-            const minBid = ethers.formatUnits(item.minBid.toString(), "ether");
-            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
-            const tokenURI = await contract.tokenURI(tokenId);
-            console.log(`TokenURI for ${tokenId}:`, tokenURI);
-            const marketnft = await contract.fetchSingleItem(tokenId)
-            const { data: metadata } = await axios.get(tokenURI);
-            console.log(`Metadata for ${tokenId}:`, metadata);
+//       const items = await Promise.all(
+//         data.map(async (item, index) => {
+//           console.log(`AProcessing item ${index}:`, item);
+//           const tokenId = item._tokenId || item.tokenId;
+//           if (!tokenId) {
+//             console.log(`AItem ${index} has no tokenId:`, item);
+//             return null;
+//           }
+//           try {
+//             const minBid = ethers.formatUnits(item.minBid.toString(), "ether");
+//             const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
+//             const tokenURI = await contract.tokenURI(tokenId);
+//             console.log(`TokenURI for ${tokenId}:`, tokenURI);
+//             const marketnft = await contract.fetchSingleItem(tokenId)
+//             const { data: metadata } = await axios.get(tokenURI);
+//             console.log(`Metadata for ${tokenId}:`, metadata);
             
-            return {
-              tokenId: tokenId.toString(),
-              owner: marketnft[0].owner,
-              creator: marketnft[0].creator,
-              image: metadata.image,
-              name: metadata.name,
-              description: metadata.description,
-              tokenURI,
-              onAuction:marketnft[0].onAuction,
-              onSale:item.onSale,
-              tokenId: tokenId.toString(),
-              seller: item.seller,
-              minBid,
-              highestBid,
-              highestBidder: item.highestBidder,
-              auctionEndTime: item.auctionEndTime,
-              active: item.active,
-            };
-          } catch (error) {
-            console.error(`Error processing item ${index}:`, error);
-            return null;
-          }
-        })
-      );
+//             return {
+//               tokenId: tokenId.toString(),
+//               owner: marketnft[0].owner,
+//               creator: marketnft[0].creator,
+//               image: metadata.image,
+//               name: metadata.name,
+//               description: metadata.description,
+//               tokenURI,
+//               onAuction:marketnft[0].onAuction,
+//               onSale:item.onSale,
+//               seller: item.seller,
+//               minBid,
+//               highestBid,
+//               highestBidder: item.highestBidder,
+//               auctionEndTime: item.auctionEndTime,
+//               active: item.active,
+//             };
+//           } catch (error) {
+//             console.error(`Error processing item ${index}:`, error);
+//             return null;
+//           }
+//         })
+//       );
   
-      const validItems = items.filter(item => item !== null);
-      console.log("Processed items:", validItems);
+//       const validItems = items.filter(item => item !== null);
+//       console.log("Processed items:", validItems);
   
-      return validItems;
+//       return validItems;
 
-}
-const fetchAuctionItems = async () => {
-      console.log("AFetching NFTs...");
+// }
+  const fetchAuctionItems = async () => {
       const provider = new ethers.JsonRpcProvider(POLYGON_AMOY_RPC_URL);
-      console.log("AProvider created");
+      // console.log("AProvider created");
       const contract = fetchContract(provider);
-      console.log("AContract fetched");
+      // console.log("AContract fetched");
   
       const data = await contract.fetchAuctionItem();
-      console.log("ARaw auction data from contract:", data);
+      // console.log("ARaw auction data from contract:", data);
 
       const items = await Promise.all(
         data.map(async (item, index) => {
-          console.log(`AProcessing item ${index}:`, item);
+          // console.log(`AProcessing item ${index}:`, item);
           const tokenId = item._tokenId || item.tokenId;
           if (!tokenId) {
-            console.log(`AItem ${index} has no tokenId:`, item);
+            // console.log(`AItem ${index} has no tokenId:`, item);
             return null;
           }
           try {
-            const minBid = ethers.formatUnits(item.minBid.toString(), "ether");
+            const price = ethers.formatUnits(item.price.toString(), "ether");
             const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
             const tokenURI = await contract.tokenURI(tokenId);
-            console.log(`TokenURI for ${tokenId}:`, tokenURI);
-            const marketnft = await contract.fetchSingleItem(tokenId)
+            // console.log(`TokenURI for ${tokenId}:`, tokenURI);
             const { data: metadata } = await axios.get(tokenURI);
-            console.log(`Metadata for ${tokenId}:`, metadata);
+            // console.log(`Metadata for ${tokenId}:`, metadata);
             
             return {
+              price,
               tokenId: tokenId.toString(),
-              owner: marketnft[0].owner,
-              creator: marketnft[0].creator,
+              seller: item.seller,
+              owner: item.owner,
+              creator: item.creator,
               image: metadata.image,
               name: metadata.name,
               description: metadata.description,
+              catagory: metadata.catagory,
+              sold: item.sold,
               tokenURI,
-              onAuction:marketnft[0].onAuction,
+              onAuction: item.onAuction,
               onSale:item.onSale,
-              tokenId: tokenId.toString(),
-              seller: item.seller,
-              minBid,
+              auctionEndTime: item.auctionEndTime.toString(),
               highestBid,
               highestBidder: item.highestBidder,
-              auctionEndTime: item.auctionEndTime,
-              active: item.active,
             };
           } catch (error) {
             console.error(`Error processing item ${index}:`, error);
@@ -720,7 +1014,7 @@ const fetchAuctionItems = async () => {
   
       return validItems;
 
-}
+  }
 const checkAndEndAuctions = async () => {
     // Fetch all ongoing auctions and check their end time
     // This could be a batch call or loop through a list of active auctions
@@ -730,18 +1024,17 @@ const checkAndEndAuctions = async () => {
         if (auction.auctionEndTime <= Date.now() / 1000) { // Assuming endTime is in seconds
             await endAuction(auction.tokenId);
             console.log(`tokenId ${auction.tokenId} nu puru`);
-            
         }
     }
 };
 
 // Call this function periodically (e.g., using setInterval)
-setInterval(checkAndEndAuctions, 60000); // Check every minute
+// setInterval(checkAndEndAuctions, 6000); // Check every minute
 
 
 
   // useEffect(()=>{fetchNFTs();},[])
-
+  
   const fetchMyNFTsOrListedNFTs = async (currentAccount) => {
     try {
       // const contract = await connectingWithSmartContract();
@@ -768,6 +1061,7 @@ setInterval(checkAndEndAuctions, 60000); // Check every minute
             console.log(`TokenURI for ${tokenId}:`, tokenURI);
             const { data: metadata } = await axios.get(tokenURI);
             console.log(`Metadata for ${tokenId}:`, metadata);
+            const highestBid = ethers.formatUnits(item.highestBid.toString(), "ether");
             const price = ethers.formatUnits(item.price.toString(), "ether");
             return {
               price,
@@ -778,8 +1072,14 @@ setInterval(checkAndEndAuctions, 60000); // Check every minute
               image: metadata.image,
               name: metadata.name,
               description: metadata.description,
+              catagory: metadata.catagory,
+              sold: item.sold,
               tokenURI,
-              sold:item.sold
+              onAuction: item.onAuction,
+              onSale:item.onSale,
+              auctionEndTime: item.auctionEndTime,
+              highestBid,
+              highestBidder: item.highestBidder,
             };
           } catch (error) {
             console.error(`Error processing item ${index}:`, error);
@@ -801,10 +1101,13 @@ setInterval(checkAndEndAuctions, 60000); // Check every minute
     try {
       const contract = await connectingWithSmartContract();
       const price = ethers.parseUnits(nft.price.toString(), "ether");
-
-      const transaction = await contract.createMarketSale(nft.tokenId, {
+      console.log("buying price",price, contract);
+      
+      const transaction = await contract.buyItem(nft.tokenId, {
         value: price,
       });
+      console.log("tra from buy",transaction);
+      
       await transaction.wait();
     } catch (error) {
       console.log("Error while buying NFTs",error);
@@ -817,16 +1120,16 @@ setInterval(checkAndEndAuctions, 60000); // Check every minute
         checkWalletConnected,
         connectWallet,
         uploadToPinata,
-        startAuction,
         placeBid,
         endAuction,
         createNFT,
+        fetchAllNFTs,
+        reSellItem,
         fetchNFTs,
         fetchMyNFTsOrListedNFTs,
         fetchAuctionItems,
         fetchNftsByCat,
         fetchNftsByid,
-        fetchSingleAuctionItem,
         buyNFT,
         uploadFileToIPFS,
         uploadJSONToIPFS,
@@ -837,4 +1140,5 @@ setInterval(checkAndEndAuctions, 60000); // Check every minute
       {children}
     </NFTBazzarContext.Provider>
   );
+  
 };

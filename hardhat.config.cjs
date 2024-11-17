@@ -3,7 +3,7 @@ require("@nomicfoundation/hardhat-verify");
 require("dotenv/config");
 
 const {vars} = require("hardhat/config");
-const oklinkkey=vars.get("Oklink_Api_Key");
+const oklinkkey=process.env.Oklink_Api_Key;
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {

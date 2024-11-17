@@ -10,8 +10,12 @@ import mag from '../assets/Home/mag.svg'
 import { cn } from "../utils/cn";
 import Card3Dusage from '../components/cards/Card3Dusage';
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import NftsData from "../dataGathering/nftsData";
+import { useSelector } from "react-redux";
 
 export const Explore = () => {
+  const nftss = useSelector((state) => state.nfts.nftList)
+
   const [search, setSearch] = useState("");
   const [nfts, setNfts] = useState([]);
   const [filteredNfts, setFilteredNfts] = useState([]);
@@ -25,14 +29,14 @@ export const Explore = () => {
   useEffect(() => {
     const loadNFTs = async () => {
       try {
-        const items = await fetchNFTs();
-        setNfts(items || []);
+        // const items = await fetchNFTs();
+        setNfts(NftsData.getAllNfts(nftss));
       } catch (error) {
         console.error("Error fetching NFTs:", error);
       }
     };
     loadNFTs();
-  }, [fetchNFTs]);
+  }, []);
 
   // Handle search input changes
   const handleSearch = (e) => {

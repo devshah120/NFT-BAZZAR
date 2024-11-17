@@ -13,8 +13,6 @@ import aig from "../assets/working/85.png";
 import big from "../assets/working/100.png";
 import cig from "../assets/working/400.png";
 import dig from "../assets/working/as.png";
-import eig from "../assets/working/4999653.jpg";
-import fig from "../assets/working/3759390.jpg";
 import asa from "../assets/card/c.jpg";
 import bsa from "../assets/card/hh.jpg";
 import csa from "../assets/card/d.jpg";
@@ -46,8 +44,12 @@ import { BackgroundGradientAnimation } from "../components/Animation/BackgroudGr
 import { SparklesCore } from "../components/Animation/BottomSpartical";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import { useNavigate } from "react-router-dom";
+import NftsData from "../dataGathering/nftsData"
+import { useSelector } from "react-redux";
+
 
 function Home() {
+  const nftss = useSelector((state) => state.nfts.nftList)
   const myRef = useRef(null);
   const isInView = useInView(myRef);
   const mainControl = useAnimation();
@@ -62,79 +64,18 @@ function Home() {
     }),
   };
 
-  const nft = [
-    {
-      id: 1,
-      name: "NFT 1",
-      image: asa,
-      description: "Description for NFT 1",
-      category: "OnSale",
-    },
-    {
-      id: 2,
-      name: "NFT 2",
-      image: bsa,
-      description: "Description for NFT 2",
-      category: "Owned",
-    },
-    {
-      id: 3,
-      name: "NFT 3",
-      image: csa,
-      description: "Description for NFT 3",
-      category: "Created",
-    },
-    {
-      id: 7,
-      name: "NFT 3",
-      image: dsa,
-      description: "Description for NFT 3",
-      category: "Collection",
-    },
-    {
-      id: 8,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 4,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 5,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    {
-      id: 6,
-      name: "NFT 3",
-      image: esa,
-      description: "Description for NFT 3",
-      category: "Activity",
-    },
-    // Add more NFT objects here
-  ];
 
-  const categories = ["OnSale", "Owned", "Created", "Collection", "Activity"];
 
   const { fetchNFTs } = useContext(NFTBazzarContext);
+  const [onSaleNfts, setOnSaleNfts] = useState([]);
+  const [onAuctionNfts, setOnAuctionNfts] = useState([]);
   const [nfts, setNfts] = useState([]);
-  const [nftsCopy, setNftsCopy] = useState([]);
 
   useEffect(() => {
-    fetchNFTs().then((item) => {
-      setNfts(item.reverse());
-      setNftsCopy(item);
-      console.log(nfts);
-    });
-  }, []);
+    setNfts(NftsData.getOnSaleNfts(nftss))
+    setOnSaleNfts(NftsData.getOnSaleNfts(nftss))
+    setOnAuctionNfts(NftsData.getOnAuctionNfts(nftss))
+  }, [nftss]);
 
   const { checkWalletConnected } = useContext(NFTBazzarContext);
   useEffect(() => {
@@ -175,38 +116,38 @@ function Home() {
       </section> */}
 
         {/* hero section */}
-        <ScrollAnimationItem > 
-      
-      <section className="h-[100vh] overflow-hidden">
-          {/* <BackgroundGradientAnimation> */}
-        <Container>
-          <motion.div className=" w-full flex items-center flex-row justify-center min-h-screen " 
-            // initial={{y:'90vw'}}
-            // animate={{y:0}}
-            // transition={{delay:0.1,type:'spring',stiffness:50}}
-            initial = {{opacity: 0}}
-            animate ={{opacity: 1}}
-            transition={{delay:0.1,ease: "easeIn"}}
-            
-          >
-       
-              <div className=" flex justify-center flex-col items-center">
-                  
-              
-                        <motion.h1 className=" text-2xl sm:text-5xl font-extrabold text-white dark:text-slate-950 text-center"
-                        initial={{opacity: 0, x: -100}}
-                        animate={{opacity:1,x:0}}
-                        transition={{delay:0.1}}
-                        >
-                          DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY </motion.h1>
-                        
-                        <motion.h1 className=" text-[120px] leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
-                        initial={{opacity: 0, x: 200}}
-                        animate={{opacity:1,x:0}}
-                        transition={{delay:0.2}}
-                        >NFTS!</motion.h1>
-                      
-                          {/* <div className="w-[40rem] h-40 relative">
+        <ScrollAnimationItem >
+
+          <section className="h-[100vh] overflow-hidden">
+            {/* <BackgroundGradientAnimation> */}
+            <Container>
+              <motion.div className=" w-full flex items-center flex-row justify-center min-h-screen "
+                // initial={{y:'90vw'}}
+                // animate={{y:0}}
+                // transition={{delay:0.1,type:'spring',stiffness:50}}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1, ease: "easeIn" }}
+
+              >
+
+                <div className=" flex justify-center flex-col items-center">
+
+
+                  <motion.h1 className=" text-2xl sm:text-5xl font-extrabold text-white dark:text-slate-950 text-center"
+                    initial={{ opacity: 0, x: -100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY </motion.h1>
+
+                  <motion.h1 className=" text-[120px] leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
+                    initial={{ opacity: 0, x: 200 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >NFTS!</motion.h1>
+
+                  {/* <div className="w-[40rem] h-40 relative">
                             
                             <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[2px] w-3/4 blur-sm" />
                             <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-3/4" />
@@ -226,9 +167,9 @@ function Home() {
                             
                             <div className="absolute inset-0 w-full h-full dark:bg-white bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
                           </div> */}
-                        
-                  
-                        {/* <motion.div className="relative mt-10 sm:w-[600px] rounded-xl dark:shadow-[0_0_10px_purple]"
+
+
+                  {/* <motion.div className="relative mt-10 sm:w-[600px] rounded-xl dark:shadow-[0_0_10px_purple]"
                         initial={{opacity: 0, x: -200}}
                         animate={{opacity:1,x:0}}
                         transition={{delay:0.3}}
@@ -243,13 +184,13 @@ function Home() {
                         <h3 className=" text-white dark:text-slate-950 text-center"><span className=" text-sky-300 dark:text-purple-900 dark:font-semibold">Popular searches:</span> cryptopunks, bored ape yacht club, moonbirds
                         </h3>
                       </motion.div> */}
-              </div>
-          
-          </motion.div>
-        </Container>
-      {/* </BackgroundGradientAnimation> */}
-      </section>
-      </ScrollAnimationItem>
+                </div>
+
+              </motion.div>
+            </Container>
+            {/* </BackgroundGradientAnimation> */}
+          </section>
+        </ScrollAnimationItem>
         {/* <motion.div
         className=" h-1  bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] animate-gradient"
         style={{ backgroundSize: "200% 200%" }}
@@ -330,66 +271,66 @@ function Home() {
         {/* Bidding Section */}
 
         <ScrollAnimationItem>
-  <section className="h-[100vh]">
-    <Container>
-      <div className="flex flex-col justify-center min-h-screen">
-        <div className="items-center flex justify-center">
-          <h1 className="font-logofont text-white dark:text-black text-3xl mb-8">
-            Live Bidding{" "}
-            <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
-              NFTs
-            </span>
-          </h1>
-        </div>
-        <div>
-          <Swiper
-            slidesPerView={1}
-            spaceBetween={7}
-            loop={true}
-            autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              "@0.00": {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-              "@0.75": {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              "@1.00": {
-                slidesPerView: 3,
-                spaceBetween: 40,
-              },
-              "@1.50": {
-                slidesPerView: 3.5,
-                spaceBetween: 50,
-              },
-            }}
-            modules={[Autoplay]}
-            className="mySwiper"
-          >
-            {nfts.map((nft) => (
-              <SwiperSlide key={nft.tokenId}>
-                <Card3Dusage
-                  Name={nft.name}
-                  Creator={nft.owner}
-                  Price={nft.price}
-                  Image={nft.image}
-                  tokenId={nft.tokenId}
-                  description={nft.description}
-                  owner={nft.owner}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
-    </Container>
-  </section>
-</ScrollAnimationItem>
+          <section className="h-[100vh]">
+            <Container>
+              <div className="flex flex-col justify-center min-h-screen">
+                <div className="items-center flex justify-center">
+                  <h1 className="font-logofont text-white dark:text-black text-3xl mb-8">
+                    Live Bidding{" "}
+                    <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
+                      NFTs
+                    </span>
+                  </h1>
+                </div>
+                <div>
+                  <Swiper
+                    slidesPerView={1}
+                    spaceBetween={7}
+                    loop={true}
+                    autoplay={{
+                      delay: 2500,
+                      disableOnInteraction: false,
+                    }}
+                    breakpoints={{
+                      "@0.00": {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                      },
+                      "@0.75": {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                      },
+                      "@1.00": {
+                        slidesPerView: 3,
+                        spaceBetween: 40,
+                      },
+                      "@1.50": {
+                        slidesPerView: 3.5,
+                        spaceBetween: 50,
+                      },
+                    }}
+                    modules={[Autoplay]}
+                    className="mySwiper"
+                  >
+                    {onAuctionNfts.map((nft) => (
+                      <SwiperSlide key={nft.tokenId}>
+                        <Card3Dusage
+                          Name={nft.name}
+                          Creator={nft.owner}
+                          Price={nft.price}
+                          Image={nft.image}
+                          tokenId={nft.tokenId}
+                          description={nft.description}
+                          owner={nft.owner}
+                        />
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
+              </div>
+            </Container>
+          </section>
+        </ScrollAnimationItem>
 
 
         {/*Top section*/}
@@ -407,16 +348,16 @@ function Home() {
                   </h1>
                 </div>
                 <div>
-                <div className="grid md:grid-cols-4 gap-10 ">
+                  <div className="grid md:grid-cols-4 gap-10 ">
 
-{nfts.slice(0,12).map((nft,index) => (
-    
-   <Trendcard kii={index} mimg={nft.image} id={nft.tokenId}  nftname={nft.name} price={`${nft.price} MATIC`} position={index+1}></Trendcard>
-  
-))}
+                    {onSaleNfts.slice(0, 12).map((nft, index) => (
+
+                      <Trendcard kii={index} mimg={nft.image} id={nft.tokenId} nftname={nft.name} price={`${nft.price} MATIC`} position={index + 1}></Trendcard>
+
+                    ))}
 
 
-</div>
+                  </div>
                 </div>
               </div>
             </Container>
@@ -448,50 +389,50 @@ function Home() {
                   </span>
                 </h1>
               </div>
-              
+
               <Swiper
-            slidesPerView={1}
-            spaceBetween={7}
-            loop={true}
-            autoplay={{
-              delay: 2500,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              "@0.00": {
-                slidesPerView: 1,
-                spaceBetween: 10,
-              },
-              "@0.75": {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              "@1.00": {
-                slidesPerView: 3,
-                spaceBetween: 40,
-              },
-              "@1.50": {
-                slidesPerView: 3.5,
-                spaceBetween: 50,
-              },
-            }}
-            modules={[Autoplay]}
-            className="mySwiper"
-          >
-            {nfts.map((nft) => (
-              <SwiperSlide key={nft.tokenId}>
-                <Card3Dusage
-                  Name={nft.name}
-                  Creator={nft.creator}
-                  Price={nft.price}
-                  Image={nft.image}
-                  tokenId={nft.tokenId}
-                  description={nft.description}
-                  owner={nft.owner}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+                slidesPerView={1}
+                spaceBetween={7}
+                loop={true}
+                autoplay={{
+                  delay: 2500,
+                  disableOnInteraction: false,
+                }}
+                breakpoints={{
+                  "@0.00": {
+                    slidesPerView: 1,
+                    spaceBetween: 10,
+                  },
+                  "@0.75": {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                  },
+                  "@1.00": {
+                    slidesPerView: 3,
+                    spaceBetween: 40,
+                  },
+                  "@1.50": {
+                    slidesPerView: 3.5,
+                    spaceBetween: 50,
+                  },
+                }}
+                modules={[Autoplay]}
+                className="mySwiper"
+              >
+                {nfts.map((nft) => (
+                  <SwiperSlide key={nft.tokenId}>
+                    <Card3Dusage
+                      Name={nft.name}
+                      Creator={nft.creator}
+                      Price={nft.price}
+                      Image={nft.image}
+                      tokenId={nft.tokenId}
+                      description={nft.description}
+                      owner={nft.owner}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </Container>
           </motion.section>
         </ScrollAnimationItem>
@@ -544,31 +485,31 @@ function Home() {
                   <div className="lg:w-1/2  items-center justify-center flex">
                     <div className="flex items-center space-x-6 lg:space-x-8">
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6">
-                      <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                      <img src={asa} className="h-full w-full rounded-lg object-cover object-center "/>
-                    </div>
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                      <img src={bsa} className="h-full w-full rounded-lg object-cover object-center"/>
-                    </div>
-                  </div>
-                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                      <img src={csa} alt="" className="h-full rounded-lg w-full object-cover object-center"/>
-                    </div>
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg  hover:scale-110 ease-in transition-all ">
-                      <img src={dsa} className="h-full w-full  rounded-lg object-cover object-center"/>
-                    </div>
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
-                      <img src={esa} className="h-full w-full rounded-lg object-cover object-center"/>
-                    </div>
-                  </div>
-                  <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                      <img src={fsa} alt="" className="h-full w-full  rounded-lg object-cover object-center"/>
-                    </div>
-                    <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
-                      <img src={gsa} className="h-full w-full  rounded-lg object-cover object-center"/>
-                    </div>
+                        <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
+                          <img src={asa} className="h-full w-full rounded-lg object-cover object-center " />
+                        </div>
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
+                          <img src={bsa} className="h-full w-full rounded-lg object-cover object-center" />
+                        </div>
+                      </div>
+                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
+                          <img src={csa} alt="" className="h-full rounded-lg w-full object-cover object-center" />
+                        </div>
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg  hover:scale-110 ease-in transition-all ">
+                          <img src={dsa} className="h-full w-full  rounded-lg object-cover object-center" />
+                        </div>
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
+                          <img src={esa} className="h-full w-full rounded-lg object-cover object-center" />
+                        </div>
+                      </div>
+                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
+                          <img src={fsa} alt="" className="h-full w-full  rounded-lg object-cover object-center" />
+                        </div>
+                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
+                          <img src={gsa} className="h-full w-full  rounded-lg object-cover object-center" />
+                        </div>
                       </div>
                     </div>
                   </div>

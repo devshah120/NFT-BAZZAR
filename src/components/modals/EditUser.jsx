@@ -11,7 +11,7 @@ import UserService from '../../dataGathering/userData';
 function EditUser({userdata,onClose}) {
 
     const dispatch = useDispatch()
-
+ 
   const { register, handleSubmit, control } = useForm()
   const [mainImage, setMainImage] = useState()
   const [bgImage, setBgImage] = useState()
@@ -79,83 +79,7 @@ function EditUser({userdata,onClose}) {
       } catch (error) {
         console.error("Error:", error);
       }
-    // try {
-    //   if (data.BgImage_URL[0] && data.MainImage_URL[0]) {
-
-    //     const uploadedBgimage = await uploadFile(data.BgImage_URL[0])
-    //     console.log(uploadedimage);
-    //     const uploadedMainimage = await uploadFile(data.MainImage_URL[0])
-    //     console.log(uploadedimage);
-
-
-    //     if (uploadedimage) {
-    //       const res = await axios.post('http://localhost:3000/api/user/updateuser', { ...data, MainImage_URL:uploadedMainimage, BgImage_URL: uploadedBgimage }, {
-    //         withCredentials: true
-    //       })
-
-    //     if (res.data.success) {
-    //       const userData = res.data.updatedUser
-    //       dispatch(login({userData}))
-    //       onClose()
-    //     }
-    //     }else{
-    //       console.log("error in upload image");
-          
-    //     }
-    //   } else if (data.BgImage_URL[0]) {
-
-    //     const uploadedBgimage = await uploadFile(data.BgImage_URL[0])
-    //     console.log(uploadedimage);
-
-
-    //     if (uploadedimage) {
-    //       const res = await axios.post('http://localhost:3000/api/user/updateuser', { ...data, BgImage_URL: uploadedBgimage }, {
-    //         withCredentials: true
-    //       })
-
-    //     if (res.data.success) {
-    //       const userData = res.data.updatedUser
-    //       dispatch(login({userData}))
-    //       onClose()
-    //     }
-    //     }else{
-    //       console.log("error in upload image");
-          
-    //     }           
-    //   } else if (data.MainImage_URL[0]) {
-
-    //     const uploadedMainimage = await uploadFile(data.MainImage_URL[0])
-    //     console.log(uploadedimage);
-
-
-    //     if (uploadedimage) {
-    //       const res = await axios.post('http://localhost:3000/api/user/updateuser', { ...data, MainImage_URL: uploadedMainimage }, {
-    //         withCredentials: true
-    //       })
-
-    //     if (res.data.success) {
-    //       const userData = res.data.updatedUser
-    //       dispatch(login({userData}))
-    //       onClose()
-    //     }
-    //     }else{
-    //       console.log("error in upload image");
-          
-    //     }           
-    //   } else {
-    //     const res = await axios.post('http://localhost:3000/api/user/updateuser', { ...data,MainImage_URL: userdata.MainImage_URL, BgImage_URL: userdata.BgImage_URL }, {
-    //       withCredentials: true
-    //     })
-    //     const userData = res.data.updatedUser
-    //     if (res.data.success) {
-    //       dispatch(login({userData}))
-    //       onClose()
-
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    
     
 
 

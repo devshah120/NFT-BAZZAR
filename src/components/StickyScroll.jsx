@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { cn } from "../utils/cn";
 import { useNavigate } from "react-router-dom";
 import fig from "../assets/working/3759390.jpg";
-
+import Resell from "./modals/Resell";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import { useSelector } from "react-redux";
 import CountdownTimer from "../components/Countdown";
@@ -20,35 +20,30 @@ export const StickyScroll = ({
   const trimAddress = (address) => {
     return `${address}`;
   };
-  const navigate = useNavigate()
-  const [activeCard, setActiveCard] =useState(0);
+  const navigate = useNavigate();
   const [bid, setBid] =useState();
-  const [nftAuctionData,setNftAuctionData] = useState();
+  const [resellOpen,setResellOpen] = useState();
   const [loader,setLoader] = useState();
-  const ref = useRef(null);
-  const pricee = nftData.price
-  const tokenId = nftData.tokenId
+  const socketConnection = useSelector(state => state.nfts.socketConnection);
+  console.log("scrollpage",nftData.owner);
+  const price = nftData.price;
+  
+  const tokenId = nftData.tokenId;
   console.log(nftData);
   
   const user = useSelector((state) => state.auth.userData)
+  console.log("scrollpage",user.MetaHash.toLowerCase() === nftData?.highestBidder.toLowerCase());
   console.log("userData", user)
   
   const { buyNFT,placeBid,fetchSingleAuctionItem } = useContext(NFTBazzarContext);
-  useEffect(() => {
-    if(nftData.onAuction){
-      fetchSingleAuctionItem(nftData.tokenId).then((item) => {
-        setNftAuctionData(item[0]);
-        console.log("auction item in scroll", item[0]);
-        });
-    }
-  },[])
+  
   const handleBuyNFT = async () => {
     console.log("Buy button clicked");
     try { 
       setLoader(true)
       const nftData = {
         tokenId: tokenId,
-        price: pricee, // Ensure price is a string
+        price // Ensure price is a string
       };
       console.log("Attempting to buy NFT with data:", nftData);
       await buyNFT(nftData);
@@ -62,36 +57,49 @@ export const StickyScroll = ({
     }
   };
   const righttime = new Date().getTime();
-  const countdown = nftAuctionData?.auctionEndTime !== undefined 
-  ? (nftAuctionData.auctionEndTime.toString() * 1000) - righttime 
+  const countdown = nftData?.auctionEndTime !== undefined 
+  ? (nftData.auctionEndTime.toString() * 1000) - righttime 
   : "";
   console.log("countdown",countdown);
   console.log("righttime",righttime);
+
+  
   
   const handlePlaceBid = async (e) => {
     console.log("Buy button clicked");
     console.log("bid",bid);
+    console.log("tru or fsl",bid && bid > nftData?.highestBid && bid > nftData?.price);
     
-    if(bid && bid > nftAuctionData?.highestBid && bid > nftAuctionData?.minBid){
-    try {
-      setLoader(true)
-      const nftData = {
-        tokenId: tokenId,
-        bidAmount: bid, // Ensure price is a string
-      };
-      console.log("Attempting to bid NFT with data:", nftData);
-      await placeBid(tokenId,nftData.bidAmount);
-      console.log("NFT purchase completed");
-      setLoader(false)
-      navigate("/")
-      alert("bid successfully");
-    } catch (error) {
-      console.error("Error in biding NFT:", error);
-      setLoader(false)
-    }
-    } else if(bid > nftAuctionData?.highestBid || bid > nftAuctionData?.minBid){
+    if(bid && bid > nftData?.highestBid && bid > nftData?.price){
+      console.log(socketConnection);  
+      
+      if(socketConnection){
+        console.log("placeBid called");
+      //   socketConnection.emit("placeBid", {
+      //     tokenId,
+      //     bidAmount: bid
+      //   });
+      // }
+      try {
+        setLoader(true)
+        const nftDataaa = {
+          tokenId: tokenId,
+          bidAmount: bid, // Ensure price is a string
+        };
+        console.log("Attempting to bid NFT with data:", nftDataaa);
+        await placeBid(tokenId,nftDataaa.bidAmount);
+        console.log("NFT purchase completed");
+        setLoader(false)
+        navigate("/")
+        alert("bid successfully");
+      } catch (error) {
+        console.error("Error in biding NFT:", error);
+        setLoader(false)
+      }
+    } else if(bid > nftData?.highestBid || bid > nftData?.minBid){
       alert("Please enter a valid bid and make sure it is greater than the current highest bid and the minimum bid")
     }
+  }
   }
   return (
     
@@ -192,8 +200,8 @@ export const StickyScroll = ({
                 transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
                 className=" gap-2 flex flex-col"
               >
-              {nftData.onSale && nftData.onAuction && (
-                user.MetaHash.toLowerCase() !== nftData.owner.toLowerCase() && (
+              {!nftData.onSale && nftData.onAuction && (
+                user.MetaHash.toLowerCase() !== nftData?.owner.toLowerCase() && (
                 <motion.div
                   initial={{ opacity: 0, x: 200 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -203,15 +211,15 @@ export const StickyScroll = ({
                   <div className="flex flex-col  md:justify-center gap-6 m-4">
                     <div className=" flex flex-col justify-center">
                       <h1 className=" text-[#6d6d6d] font-extrabold">HighestBid</h1>
-                      <h1>{`${nftAuctionData?.highestBid} MATIC`}</h1>
+                      <h1>{`${nftData?.highestBid} MATIC`}</h1>
                       <h1 className=" text-[#6d6d6d] font-extrabold">HighestBidder</h1>
-                      <h1>{`${trimAddress(nftAuctionData?.highestBidder)}`}</h1>
+                      <h1>{`${trimAddress(nftData?.highestBidder)}`}</h1>
                     </div>
                     <div className="">
                       <h1>Auction Ends In</h1>
                       <CountdownTimer initialSeconds={Math.floor(countdown/1000)} />
                     </div>
-                    {user.MetaHash.toLowerCase() === nftAuctionData?.highestBidder.toLowerCase() ? (
+                    {user.MetaHash.toLowerCase() === nftData?.highestBidder.toLowerCase() ? (
                       <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
                         You are the highest bidder!
                       </div>
@@ -236,7 +244,7 @@ export const StickyScroll = ({
                   </div>
                 </motion.div>)
               )}
-              {nftData.onSale && nftData.onAuction && (
+              {!nftData.onSale && nftData.onAuction && (
                 user.MetaHash.toLowerCase() === nftData.owner.toLowerCase() && (
                   <div className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7">
                     Your nft on auction
@@ -267,9 +275,17 @@ export const StickyScroll = ({
                 user.MetaHash.toLowerCase() === nftData.owner.toLowerCase() && (
                   <Button
                     className="md:w-[400px] w-[200px] md:h-[50px] font-bold text-xl mb-7"
-                    // onClick={handleBuyNFT}
+                    onClick={() => {setResellOpen(true)
+                      if (typeof window != 'undefined' && window.document) {
+                          console.log(document.body.style.overflow);
+                          
+                          document.body.style.overflow = 'hidden';
+                          console.log(document.body.style.overflow);
+
+                      }
+                    }}
                   >
-                    resell
+                    Resell
                   </Button>
                 )
               )}
@@ -299,6 +315,18 @@ export const StickyScroll = ({
       </div>
       </div>
       </Container>
+
+        {
+            resellOpen && <Resell nftdata={nftData} onClose={() => {setResellOpen(false)
+                if (typeof window != 'undefined' && window.document) {
+                    console.log(document.body.style.overflow);
+                    
+                    document.body.style.overflow = '';
+                    console.log(document.body.style.overflow);
+
+                }
+            }} />  // Display the EditUser modal when isOpen is true
+        }
     </motion.div>
       ) : (
         <div>Loading NFT data...</div> // Or a placeholder

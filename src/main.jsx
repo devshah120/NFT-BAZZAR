@@ -7,6 +7,7 @@ import { Home, Item, Profile, Explore, CreateNFT, Collections, Auction,NFT, Regi
 import AuthLayout from './utils/AuthLayout.jsx'
 import { Provider } from 'react-redux'
 import store from './store/store.js'
+import { NFTBazzarProvider } from '../Context/NFTBazzarContext.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -26,9 +27,9 @@ const router = createBrowserRouter(
 )
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
     <Provider store={store}>
-      <RouterProvider router={router}/>
-    </Provider>
-  </React.StrictMode>,
+      <NFTBazzarProvider>
+        <RouterProvider router={router}/>
+      </NFTBazzarProvider>
+    </Provider>,
 )

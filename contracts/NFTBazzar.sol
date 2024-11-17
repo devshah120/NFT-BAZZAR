@@ -16,7 +16,7 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
     address payable owner;
 
     mapping(uint256 => MarketItem) private idMarketItem;
-    mapping(uint256 => Auction) private auctions; // Auction details for each token
+    // mapping(uint256 => Auction) private auctions; // Auction details for each token
 
     struct MarketItem {
         uint256 _tokenId;
@@ -24,33 +24,26 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         address payable owner;
         address payable creator;
         address payable contractt;
-        uint256 price;
+        uint256 price; // This will represent the sale price or the auction's minimum bid
         bool sold;
         bool onAuction;
         bool onSale;
+        uint256 auctionEndTime; // Auction-specific data
+        uint256 highestBid; // Auction-specific data
+        address payable highestBidder; // Auction-specific data
     }
 
-    struct Auction {
-        uint256 tokenId;
-        address payable seller;
-        uint256 minBid;
-        uint256 highestBid;
-        address payable highestBidder;
-        uint256 auctionEndTime;
-        bool active;
-    }
+    // struct Auction {
+    //     uint256 tokenId;
+    //     address payable seller;
+    //     uint256 minBid;
+    //     uint256 highestBid;
+    //     address payable highestBidder;
+    //     uint256 auctionEndTime;
+    //     bool active;
+    // }
 
-    event idMarketItemCreated(
-        uint256 indexed tokenId,
-        address seller,
-        address owner,
-        address creator,
-        address contractt,
-        uint256 price,
-        bool sold,
-        bool onAuction,
-        bool onSale
-    );
+    
 
     event AuctionStarted(
         uint256 indexed tokenId,
@@ -62,8 +55,8 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
 
     event AuctionEnded(
         uint256 indexed tokenId,
-        address winner,
-        uint256 highestBid
+        uint256 highestBid,
+        address winner 
     );
 
     modifier onlyOwner() {
@@ -88,156 +81,158 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         return listingPrice;
     }
 
-    // Start Auction for an NFT
-    function startAuction(
-        uint256 tokenId,
-        uint256 minBid,
-        uint256 auctionDuration
-    ) public {
-        require(
-            idMarketItem[tokenId].owner == msg.sender,
-            "Only the owner can start an auction"
-        );
-        require(
-            auctions[tokenId].active == false,
-            "Auction already active for this NFT"
-        );
-        idMarketItem[tokenId].onAuction = true;
-
-        uint256 auctionEndTime = block.timestamp + auctionDuration;
-
-        auctions[tokenId] = Auction({
-            tokenId: tokenId,
-            seller: payable(msg.sender),
-            minBid: minBid,
-            highestBid: 0,
-            highestBidder: payable(address(0)),
-            auctionEndTime: auctionEndTime,
-            active: true
-        });
-
-        emit AuctionStarted(tokenId, minBid, auctionDuration);
-    }
-
-    // Place a bid
-    function bid(uint256 tokenId) public payable nonReentrant {
-        Auction storage auction = auctions[tokenId];
-        require(auction.active, "Auction is not active");
-        require(block.timestamp < auction.auctionEndTime, "Auction has ended");
-        require(
-            msg.value > auction.minBid,
-            "Bid must be higher than the minimum bid"
-        );
-        require(
-            msg.value > auction.highestBid,
-            "There is already a higher bid"
-        );
-
-        // Refund previous highest bidder
-        if (auction.highestBidder != address(0)) {
-            auction.highestBidder.transfer(auction.highestBid);
-        }
-
-        auction.highestBid = msg.value;
-        auction.highestBidder = payable(msg.sender);
-
-        emit NewBid(tokenId, msg.sender, msg.value);
-    }
-
-    // End Auction
-    function endAuction(uint256 tokenId) public nonReentrant {
-        Auction storage auction = auctions[tokenId];
-        require(auction.active, "Auction is not active");
-        require(
-            block.timestamp >= auction.auctionEndTime,
-            "Auction is still ongoing"
-        );
-
-        auction.active = false;
-        idMarketItem[tokenId].onAuction = false;
-
-        if (auction.highestBidder != address(0)) {
-            // Transfer ownership of the NFT to the highest bidder
-            idMarketItem[tokenId].owner = auction.highestBidder;
-            // aa jovanu che
-            idMarketItem[tokenId].seller = auction.highestBidder;
-            idMarketItem[tokenId].price = auction.highestBid;
-
-            idMarketItem[tokenId].sold = true;
-            _itemsSold.increment();
-            _transfer(address(this), auction.highestBidder, tokenId);
-
-            // Transfer funds to the seller
-            auction.seller.transfer(auction.highestBid);
-
-            emit AuctionEnded(
-                tokenId,
-                auction.highestBidder,
-                auction.highestBid
-            );
-        } else {
-            // No bids were placed, return NFT to seller
-            idMarketItem[tokenId].owner = auction.seller;
-            _transfer(address(this), auction.seller, tokenId);
-        }
-    }
-
     // Create NFT
     event TokenCreated(uint256 indexed tokenId, string tokenURI, uint256 price);
-
-    function createToken(
-        string memory tokenURI,
-        uint256 price
-    ) public payable returns (uint256) {
+    event idMarketItemCreated(
+        uint256 _tokenId,
+        address payable seller,
+        address payable owner,
+        address payable creator,
+        address payable contractt,
+        uint256 price, 
+        bool sold,
+        bool onAuction,
+        bool onSale,
+        uint256 auctionEndTime, 
+        uint256 highestBid,
+        address payable highestBidder
+    );
+    function createToken(string memory tokenURI, uint256 price, bool isAuction, uint256 auctionDuration) public payable returns (uint256) {
         _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
 
         _mint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, tokenURI);
-        createMarketItem(newTokenId, price);
 
+        if (isAuction) {
+            createMarketItem(newTokenId, price, true, auctionDuration);
+        } else {
+            createMarketItem(newTokenId, price, false, 0);
+        }
         emit TokenCreated(newTokenId, tokenURI, price);
-
         return newTokenId;
     }
 
-    // Create Market Item
-    function createMarketItem(uint256 tokenId, uint256 price) private {
+    function createMarketItem(uint256 tokenId, uint256 price, bool isAuction, uint256 auctionDuration) private {
         require(price > 0, "Price must be greater than 0");
-        require(
-            msg.value == listingPrice,
-            "Price Must be equal to the listing price"
-        );
+        require(msg.value == listingPrice, "Price must be equal to the listing price");
 
         idMarketItem[tokenId] = MarketItem(
             tokenId,
-            payable(address(this)), //seller
-            payable(msg.sender), //owner
-            payable(msg.sender), //creator
-            payable(address(this)),
+            payable(msg.sender), // seller is msg.sender initially
+            payable(msg.sender), // owner remains null until purchased
+            payable(msg.sender), // creator
+            payable(address(this)), // contract
             price,
-            false,
-            false,
-            true
+            false, // sold initially false
+            isAuction, // onAuction
+            !isAuction, // onSale is true if not auction
+            block.timestamp + (auctionDuration * 1 minutes), // auction end time if auction
+            0, // highest bid starts at 0
+            payable(address(0)) // no highest bidder initially
         );
-
-        _transfer(msg.sender, address(this), tokenId);
 
         emit idMarketItemCreated(
             tokenId,
-            address(this),
-            msg.sender,
-            msg.sender,
-            address(this),
+            payable(msg.sender), // seller is msg.sender initially
+            payable(msg.sender), // owner remains null until purchased
+            payable(msg.sender), // creator
+            payable(address(this)), // contract
             price,
-            false,
-            false,
-            true
+            false, // sold initially false
+            isAuction, // onAuction
+            !isAuction, // onSale is true if not auction
+            block.timestamp + (auctionDuration * 1 minutes), // auction end time if auction
+            0, // highest bid starts at 0
+            payable(address(0)) // no highest bidder initially
         );
+
+        _transfer(msg.sender, address(this), tokenId);
     }
 
+    // function createToken(
+    //     string memory tokenURI,
+    //     uint256 price
+    // ) public payable returns (uint256) {
+    //     _tokenIds.increment();
+    //     uint256 newTokenId = _tokenIds.current();
+
+    //     _mint(msg.sender, newTokenId);
+    //     _setTokenURI(newTokenId, tokenURI);
+    //     // createMarketItem(newTokenId, price);
+
+    //     emit TokenCreated(newTokenId, tokenURI, price);
+
+    //     return newTokenId;
+    // }
+
+    // // Create Market Item
+    // function createMarketItem(uint256 tokenId, uint256 price) private {
+    //     require(price > 0, "Price must be greater than 0");
+    //     require(
+    //         msg.value == listingPrice,
+    //         "Price Must be equal to the listing price"
+    //     );
+
+    //     idMarketItem[tokenId] = MarketItem(
+    //         tokenId,
+    //         payable(address(this)),
+    //         payable(msg.sender),
+    //         payable(msg.sender), 
+    //         payable(address(this)),
+    //         price,
+    //         false,
+    //         false,
+    //         true
+    //     );
+
+    //     _transfer(msg.sender, address(this), tokenId);
+
+    //     emit idMarketItemCreated(
+    //         tokenId,
+    //         address(this),
+    //         msg.sender,
+    //         msg.sender,
+    //         address(this),
+    //         price,
+    //         false,
+    //         false,
+    //         true
+    //     );
+    // }
+    event BuyItem( uint256 tokenId, address indexed recipient);
+    // Buy NFT
+    function buyItem(uint256 tokenId) public payable nonReentrant() { 
+        uint256 price = idMarketItem[tokenId].price;
+        require(
+            msg.value == price,
+            "Please submit the asking price to complete the purchase"
+        );
+
+        uint256 listingFee = getListingPrice();
+        uint256 sellerAmount = msg.value - listingFee;
+        require(sellerAmount > 0, "Seller amount is zero");
+
+        // Transfer to marketplace owner
+        payable(owner).transfer(listingFee);
+
+        // Transfer to seller
+        payable(idMarketItem[tokenId].seller).transfer(sellerAmount);
+
+            idMarketItem[tokenId].seller = idMarketItem[tokenId].owner;
+            idMarketItem[tokenId].owner = payable(msg.sender);
+            idMarketItem[tokenId].sold = true;
+            idMarketItem[tokenId].onSale = false;
+            _itemsSold.increment();
+
+            _transfer(address(this), msg.sender, tokenId);
+            emit BuyItem(tokenId, idMarketItem[tokenId].owner);
+
+    }
+
+    event ResellItem(uint256 tokenId, uint256 price, bool onAuction, uint256 auctionEndTime, address highestBidder);
     // Resale NFT
-    function reSellToken(uint256 tokenId, uint256 price) public payable {
+    function reSellItem(uint256 tokenId, uint256 price, bool isAuction, uint256 auctionDuration) public payable {
         require(
             idMarketItem[tokenId].owner == msg.sender,
             "Only NFT Owner can sell the NFT"
@@ -247,47 +242,133 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
             "Price Must be greater than or equal to the listing price"
         );
 
+        idMarketItem[tokenId].seller = idMarketItem[tokenId].owner;
         idMarketItem[tokenId].sold = false;
-        idMarketItem[tokenId].onSale = true;
-        idMarketItem[tokenId].price = price;
+
+        if (isAuction) {
+            idMarketItem[tokenId].onAuction = true;
+            idMarketItem[tokenId].price = price;
+            idMarketItem[tokenId].auctionEndTime = block.timestamp + (auctionDuration * 1 minutes);
+            idMarketItem[tokenId].highestBid = 0;
+            idMarketItem[tokenId].highestBidder = payable(address(0));
+        } else {
+            idMarketItem[tokenId].onSale = true;
+            idMarketItem[tokenId].price = price;
+        }
+
+        
 
         _itemsSold.decrement();
 
         _transfer(msg.sender, address(this), tokenId);
+
+        emit ResellItem(tokenId, price, isAuction, idMarketItem[tokenId].auctionEndTime, idMarketItem[tokenId].highestBidder);
     }
 
-    // Buy NFT
-    function createMarketSale(uint256 tokenId) public payable {
-        uint256 price = idMarketItem[tokenId].price;
+    // Place a bid
+    function bid(uint256 tokenId) public payable nonReentrant {
+        MarketItem storage item = idMarketItem[tokenId]; // Load the item from storage
+        require(item.onAuction, "Auction is not active");
+        require(block.timestamp < item.auctionEndTime, "Auction has ended");
         require(
-            msg.value == price,
-            "Please submit the asking price to complete the purchase"
+            msg.value > item.price,
+            "Bid must be higher than the minimum bid"
+        );
+        require(
+            msg.value > item.highestBid,
+            "There is already a higher bid"
+        ); 
+
+        // Refund previous highest bidder
+        if (item.highestBidder != address(0)) {
+            item.highestBidder.transfer(item.highestBid);
+        }
+
+        item.highestBid = msg.value;
+        item.highestBidder = payable(msg.sender);
+
+        emit NewBid(tokenId, msg.sender, msg.value);
+    }
+
+    event AuctionEndedWithNoBid( uint256 tokenId);
+    // End Auction
+    function endAuction(uint256 tokenId) public payable nonReentrant {
+        MarketItem storage item = idMarketItem[tokenId]; // Load the item from storage
+        require(item.onAuction, "Auction is not active");
+        require(
+            block.timestamp >= item.auctionEndTime,
+            "Auction is still ongoing"
         );
 
-        idMarketItem[tokenId].seller = idMarketItem[tokenId].owner;
-        idMarketItem[tokenId].owner = payable(msg.sender);
-        idMarketItem[tokenId].sold = true;
-        idMarketItem[tokenId].onSale = false;
+        // auction.active = false;
+         
+        item.onAuction = false;
 
-        _itemsSold.increment();
+        if (item.highestBidder != address(0)) {
 
-        _transfer(address(this), msg.sender, tokenId);
+            uint256 listingFee = getListingPrice();
+            payable(owner).transfer(listingFee); // Transfer listing fee to marketplace owner
 
-        payable(owner).transfer(listingPrice);
-        payable(idMarketItem[tokenId].seller).transfer(msg.value);
+            // Transfer the remaining amount to the seller
+            uint256 sellerAmount = item.highestBid;
+            require(sellerAmount > 0, "Seller amount is zero");
+            payable(item.seller).transfer(sellerAmount);
+            // Transfer ownership of the NFT to the highest bidder
+            item.seller = item.owner;
+            item.owner = item.highestBidder;
+            
+            item.price = item.highestBid;
+
+            item.sold = true;
+            _itemsSold.increment();
+
+            // Transfer funds to the seller
+            // idMarketItem[tokenId].seller = item.highestBidder;
+            _transfer(address(this), item.highestBidder, tokenId);
+
+            emit AuctionEnded(
+                tokenId,
+                item.highestBid,
+                item.highestBidder
+            );
+        } else {
+            // No bids were placed, return NFT to seller
+            // item.owner = item.seller;
+            _transfer(address(this), item.seller, tokenId);
+        }
     }
 
-    // Get all unsold NFT data
+    // Get all NFT data
+    function fetchAllItems() public view returns (MarketItem[] memory){
+        uint256 itemCount = _tokenIds.current();
+        uint256 currentIndex = 0;
+
+        MarketItem[] memory items = new MarketItem[](itemCount); //1
+        for (uint256 i = 0; i < itemCount; i++) {
+                items[currentIndex] = idMarketItem[i + 1];
+                currentIndex += 1;
+        }
+
+        require(currentIndex > 0, "No items found");
+        return items;
+    }
+
+    // Get all onSale NFT data
     function fetchMarketItem() public view returns (MarketItem[] memory) {
         uint256 itemCount = _tokenIds.current();
-        uint256 unsoldItemCount = _tokenIds.current() - _itemsSold.current();
-        require(unsoldItemCount > 0, "No unsold items");
+        uint256 onSaleItem = 0;
 
-        MarketItem[] memory items = new MarketItem[](unsoldItemCount); //1
+        for (uint256 i = 0; i < itemCount; i++) {
+            if (idMarketItem[i + 1].onSale) {
+                onSaleItem += 1;
+            }
+        }
+
+        MarketItem[] memory items = new MarketItem[](onSaleItem); //1
         uint256 currentIndex = 0;
 
         for (uint256 i = 0; i < itemCount; i++) {
-            if (!idMarketItem[i + 1].sold) {
+            if (idMarketItem[i + 1].onSale) {
                 items[currentIndex] = idMarketItem[i + 1];
                 currentIndex += 1;
             }
@@ -297,6 +378,7 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         return items;
     }
 
+    // Get the single item
     function fetchSingleItem(
         uint256 tokenID
     ) public view returns (MarketItem[] memory) {
@@ -316,42 +398,25 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         return items;
     }
 
-    function fetchSingleAuctionItem(
-        uint256 tokenId
-    ) public view returns (Auction[] memory) {
-        uint256 itemCount = _tokenIds.current();
-        Auction[] memory items = new Auction[](1); //1
-        uint256 currentIndex = 0;
-        for (uint256 i = 0; i < itemCount; i++) {
-            if (auctions[i + 1].tokenId == tokenId) {
-                items[currentIndex] = auctions[i + 1];
-                currentIndex += 1;
-            }
-        }
-        require(currentIndex > 0, "No auction items");
-
-        return items;
-    }
-
-    function fetchAuctionItem() public view returns (Auction[] memory) {
+    // Get all onAuction NFT data
+    function fetchAuctionItem() public view returns (MarketItem[] memory) { 
         uint256 itemCount = _tokenIds.current();
         uint256 auctionItemCount = 0;
         for (uint256 i = 0; i < itemCount; i++) {
-            if (auctions[i + 1].active) {
+            if (idMarketItem[i + 1].onAuction) {
                 auctionItemCount += 1;
             }
         }
         require(auctionItemCount > 0, "No auction items");
-        Auction[] memory items = new Auction[](auctionItemCount); //1
+        MarketItem[] memory items = new MarketItem[](auctionItemCount); //1
         uint256 currentIndex = 0;
         for (uint256 i = 0; i < itemCount; i++) {
-            if (auctions[i + 1].active) {
-                items[currentIndex] = auctions[i + 1];
+            if (idMarketItem[i + 1].onAuction) {
+                items[currentIndex] = idMarketItem[i + 1];
                 currentIndex += 1;
             }
         }
         require(currentIndex > 0, "No auction items");
-
         return items;
     }
 
@@ -372,23 +437,9 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
             }
         }
 
-        // Second loop: Count how many NFTs in general (this can be skipped if not needed)
-        // for (uint256 i = 1; i <= totalCount; i++) {
-        //     if (idMarketItem[i].seller != address(0)) { // Check valid seller
-        //         itemCount += 1;
-        //     }
-        // }
-
-        // Create the return array and populate it with the NFTs
-        // MarketItem[] memory items = new MarketItem[](itemCount);
         MarketItem[] memory sitems = new MarketItem[](sitemCount);
 
         for (uint256 i = 1; i <= totalCount; i++) {
-            // if (idMarketItem[i].seller != address(0)) { // Valid seller
-            //     MarketItem storage currentItem = idMarketItem[i];
-            //     items[currentItemIndex] = currentItem;
-            //     currentItemIndex += 1;
-            // }
 
             // Populate sitems array with NFTs belonging to the user
             if (idMarketItem[i].owner == userAdd) {
@@ -400,4 +451,5 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
 
         return sitems;
     }
+
 }

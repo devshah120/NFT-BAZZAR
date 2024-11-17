@@ -4,8 +4,10 @@ import { Button, Container } from "../components";
 import { Card3Dusage } from "../components";
 import { motion } from "framer-motion";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
+import NftsData from '../dataGathering/nftsData'
 import ScrollAnimationItem from "../components/Animation/PageAnimation";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useSelector } from "react-redux";
 
 import "../style.css";
 
@@ -16,17 +18,18 @@ import "swiper/css/effect-cards";
 // import required modules
 import { EffectCards,Autoplay } from "swiper/modules";
 function Auction() {
+  const nftss = useSelector((state) => state.nfts.nftList)
   const [nfts, setNfts] = useState([]);
   const { fetchAuctionItems } = useContext(NFTBazzarContext);
   // const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
 
   useEffect(() => {
-    fetchAuctionItems().then((item) => {
-      setNfts(item.reverse());
-      setNftsCopy(item);
-      console.log(nfts);
-    });
+    // fetchAuctionItems().then((item) => {
+    //   setNftsCopy(item);
+    //   console.log(nfts);
+    // });
+    setNfts(NftsData.getOnAuctionNfts(nftss));
   }, []);
   const textVariants = {
     hidden: { opacity: 0 },
