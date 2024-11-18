@@ -25,6 +25,7 @@
     "ether": "^0.0.9",
     "ethers": "^6.13.2",
     "framer-motion": "^11.2.10",
+    "gsap": "^3.12.5",
     "ipfs-http-client": "^58.0.0",
     "mini-svg-data-uri": "^1.4.4",
     "react": "^18.2.0",

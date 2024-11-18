@@ -2,7 +2,7 @@ import React from 'react'
 import ThemeToggle from '../Animation/ThemeToggle'
 function Trycard({num,title,sub,img}) {
   return (
-    <div className=' rounded-2xl items-center  gap-12  flex justify-center overflow-hidden hover:scale-110 ease-in transition-all  dark:shadow-[0_0_10px_purple]'>
+    <div className=' rounded-2xl items-center  gap-12  flex justify-center overflow-hidden hover:scale-110 ease-in transition-all  dark:shadow-[0_0_20px_purple]'>
         <div className='bg-[conic-gradient(theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] '>
           <div className="w-56 p-3 rounded-2xl m-[4px] flex flex-col  relative items-center bg-[#2a2828] dark:bg-[#0c0202b9] overflow-hidden ">
               <img

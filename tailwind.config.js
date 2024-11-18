@@ -27,6 +27,7 @@ export default {
       },
       animation: {
         'gradient': 'gradient 8s linear infinite',
+        'animate-gradient': 'gradient 3s infinite alternate',
         'gradient-rotate': 'gradient-rotate 8s linear infinite',
         first: "moveVertical 30s ease infinite",
         second: "moveInCircle 20s reverse infinite",
@@ -35,6 +36,14 @@ export default {
         fifth: "moveInCircle 20s ease infinite",
       },
       keyframes: {
+        'gradient':{
+          '0%':{
+            'background-position': '0% 50%'
+          },
+          '100%': {
+            'background-position':' 100% 50%'
+          }
+        },
         'gradient': {
           to: { 'background-position': '200% center' },
         },

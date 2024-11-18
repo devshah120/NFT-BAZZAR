@@ -46,9 +46,11 @@ import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import { useNavigate } from "react-router-dom";
 import NftsData from "../dataGathering/nftsData"
 import { useSelector } from "react-redux";
-
-
 function Home() {
+
+
+
+
   const nftss = useSelector((state) => state.nfts.nftList)
   const myRef = useRef(null);
   const isInView = useInView(myRef);
@@ -102,8 +104,30 @@ function Home() {
     },
   };
 
+
+const useDelayByScreen = (dilay = 1) => {
+  const [delay, setDelay] = useState(0.5);
+
+  useEffect(() => {
+    const updateDelay = () => {
+      if (window.innerWidth <= 600) {
+        setDelay(1); // Small screens
+      }else {
+        setDelay(dilay); // Large screens
+      }
+    };
+
+    updateDelay();
+    window.addEventListener("resize", updateDelay);
+
+    return () => window.removeEventListener("resize", updateDelay);
+  }, []);
+
+  return delay;
+};
+
   return (
-    <main>
+    <main className=" overflow-y-hidden ">
       <div className="min-h-screen text-black dark:text-black">
         {/* <section className="h-[100vh]">
         <BackgroundGradientAnimation>
@@ -200,7 +224,7 @@ function Home() {
 
         {/* How to USe */}
         {/* bg-fixed bg-topp bg-cover */}
-        <section className=" py-10 ">
+        <section className=" ">
           <ScrollAnimationItem>
             <Container>
               <motion.div
@@ -216,7 +240,7 @@ function Home() {
                 whileInView="visible"
                 //  viewport={{once:true}}
 
-                className=" flex flex-col justify-center min-h-screen gap-20  "
+                className=" flex rounded-3xl bg-zinc-800 dark:bg-[#ededed] flex-col justify-center p-10 gap-8  "
               >
                 <div className=" flex justify-center">
                   <motion.h1
@@ -234,12 +258,33 @@ function Home() {
                 </div>
 
                 <div className="items-center  gap-12  flex flex-col sm:flex-row justify-center">
+                  <motion.div
+                  ref={myRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 100 },
+                    visiible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hiddden"
+                  animate={mainControl}
+                  transition={{ duration: 0.5,delay: useDelayByScreen(1) }}
+                  whileInView ="visiible">
                   <Trycard
                     title={"Create Your Account & Add wallet"}
                     sub={"Join and Manage Your NFTs: Account and Wallet Setup"}
                     num={"1"}
                     img={aig}
                   />
+                  </motion.div>
+                  <motion.div
+                  ref={myRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 100 },
+                    visiible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hiddden"
+                  animate={mainControl}
+                  transition={{ duration: 0.5,delay: useDelayByScreen(1.5) }}
+                  whileInView ="visiible">
                   <Trycard
                     title={"Get Approval From Our Review Team"}
                     sub={
@@ -248,12 +293,34 @@ function Home() {
                     num={"2"}
                     img={dig}
                   />
+                  </motion.div>
+                  <motion.div
+                  ref={myRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 100 },
+                    visiible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hiddden"
+                  animate={mainControl}
+                  transition={{ duration: 0.5,delay: useDelayByScreen(2) }}
+                  whileInView ="visiible">
                   <Trycard
                     title={"Create Your NFTs & List For Them Sell"}
                     sub={"Easily Create Your NFTs and List Them for Sale Today"}
                     num={"3"}
                     img={big}
                   />
+                  </motion.div>
+                  <motion.div
+                  ref={myRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 100 },
+                    visiible: { opacity: 1, x: 0 },
+                  }}
+                  initial="hiddden"
+                  animate={mainControl}
+                  transition={{ duration: 0.5,delay: useDelayByScreen(2.5) }}
+                  whileInView ="visiible">
                   <Trycard
                     title={"Now Sell Your NFTs & Review Our Site"}
                     sub={
@@ -262,11 +329,13 @@ function Home() {
                     num={"4"}
                     img={cig}
                   />
+                  </motion.div>
                 </div>
               </motion.div>
             </Container>
           </ScrollAnimationItem>
         </section>
+         
 
         {/* Bidding Section */}
 
@@ -335,10 +404,10 @@ function Home() {
 
         {/*Top section*/}
         {/* bg-fixed bg-items bg-cover */}
-        <section className=" ">
+        <section className="  ">
           <ScrollAnimationItem>
             <Container>
-              <div className=" flex flex-col py-10 justify-center min-h-screen ">
+              <div className=" flex flex-col bg-zinc-800 dark:bg-[#ededed] py-10 justify-center rounded-3xl p-10 ">
                 <div className="items-center flex justify-center ">
                   <h1 className=" font-logofont text-white dark:text-black text-center text-3xl mb-8">
                     Popular Items In Last <br className="md:hidden" />
@@ -351,9 +420,19 @@ function Home() {
                   <div className="grid md:grid-cols-4 gap-10 ">
 
                     {onSaleNfts.slice(0, 12).map((nft, index) => (
-
-                      <Trendcard kii={index} mimg={nft.image} id={nft.tokenId} nftname={nft.name} price={`${nft.price} MATIC`} position={index + 1}></Trendcard>
-
+                      <motion.div
+                        ref={myRef}
+                        variants={{
+                          hiddden: { opacity: 0, x: 100 },
+                          visiible: { opacity: 1, x: 0 },
+                        }}
+                        initial="hiddden"
+                        animate={mainControl}
+                        transition={{ duration: 0.5,delay: 0.5 }}
+                        whileInView ="visiible"
+                      >
+                        <Trendcard kii={index} mimg={nft.image} id={nft.tokenId} nftname={nft.name} price={`${nft.price} MATIC`} position={index + 1}></Trendcard>
+                      </motion.div>
                     ))}
 
 
@@ -438,7 +517,7 @@ function Home() {
         </ScrollAnimationItem>
 
         {/* bg-fixed bg-endd bg-cover */}
-        <section className=" py-10  ">
+        <section className=" mb-10 sm:mb-0 ">
           <ScrollAnimationItem>
             <Container>
               <div className="  flex flex-col  justify-center min-h-screen ">

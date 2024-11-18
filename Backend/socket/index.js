@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
   }; 
   
   // Run backend automation every 60 seconds to check if auctions need to be ended
-  setInterval(endAuctionsAutomatically, 6000);
+  setInterval(endAuctionsAutomatically, 60000);
 
 
 
