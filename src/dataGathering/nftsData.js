@@ -53,7 +53,7 @@ export class NftsService {
 
   // Get filtered bought NFTs by owner
   getBoughtNftsByOwner(nfts,owner){
-    return nfts.filter(nft => nft.owner.toLowerCase() === owner && nft.seller.toLowerCase() !== owner && nft.creator.toLowerCase() !== owner);
+    return nfts.filter(nft => nft.owner.toLowerCase() === owner);
   }
 
   // Get NFTs by catagory

@@ -14,6 +14,11 @@ import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { Autoplay } from "swiper/modules";
+import copy from "../assets/profile/document-copy.svg";
+import editt from "../assets/profile/edit.svg";
+import { LuCopyPlus } from "react-icons/lu";
+import { FaUserEdit } from "react-icons/fa";
+import { RiLogoutCircleRLine } from "react-icons/ri";
 
 function Profile() {
   const nftss = useSelector((state) => state.nfts.nftList)
@@ -43,11 +48,11 @@ function Profile() {
 
 
 
-  const [nfts, setNfts] = useState([])
+  const [selected, setSelected] = useState()
   const [onSaleNfts, setOnSaleNfts] = useState([])
   const [onAuctionNfts, setOnAuctionNfts] = useState([])
-  const [createdNfts, setCreatedNfts] = useState([])
   const [boughtNfts, setBoughtNfts] = useState([])
+  const [showNfts, setShowNfts] = useState([])
   const { fetchMyNFTsOrListedNFTs } = useContext(NFTBazzarContext);
   // const [nfts, setNfts] = useState([]);
   // const [nftsCopy, setNftsCopy] = useState([]);
@@ -82,11 +87,10 @@ function Profile() {
     // }
     console.log("profile currentaccount", currentAccount)
     console.log("nftss", nftss)
-    setNfts(NftsData.getNftsByOwner(nftss, currentAccount));
-    setOnAuctionNfts(NftsData.getOnAuctionNftsByOwner(nftss, currentAccount));
-    setOnSaleNfts(NftsData.getOnSaleNftsByOwner(nftss, currentAccount));
-    setCreatedNfts(NftsData.getJustCreatedNftsByOwner(nftss, currentAccount));
-    setBoughtNfts(NftsData.getBoughtNftsByOwner(nftss, currentAccount));
+    // setNfts(NftsData.getNftsByOwner(nftss, currentAccount));
+    setOnAuctionNfts(NftsData.getOnAuctionNftsByOwner(nftss, currentAccount))
+    setOnSaleNfts(NftsData.getOnSaleNftsByOwner(nftss, currentAccount))
+    setBoughtNfts(NftsData.getBoughtNftsByOwner(nftss, currentAccount))
     if (checkWalletConnected) {
       checkWalletConnected();
     } else {
@@ -119,30 +123,32 @@ function Profile() {
   //     // Add more NFT objects here
   //   ];
 
-
+  const trimAddress = (address) => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  };
   return (
     <main>
-      <div className=" min-h-screen dark:bg-white text-white bg-black dark:text-black ">
+      <div className=" min-h-screen  text-white  dark:text-black ">
 
         {/* Profile Picture Details */}
-        <section className=" h-[100vh]  ">
+        <section className=" 
+        ">
           <div >
-            <img src={user?.BgImage_URL} alt="" className='w-full h-[300px] object-cover rounded-lg shadow-lg filter ' />
+            <img src={user?.BgImage_URL} alt="" className='w-full h-[300px] object-cover  shadow-lg filter ' />
           </div>
           <Container >
 
-            <div className='flex justify-center items-center border-2 rounded-lg relative'>
-              <img src={user?.MainImage_URL} alt="" className='w-[150px] h-[150px] object-cover absolute  border-4 z-[5]' />
-              <div className=' flex justify-center items-center flex-col gap-3'>
-                <h1 className=' font-bold  text-4xl mt-4  '>{user?.Name}</h1>
-                <div className='h-[30px] w-[430px] rounded-full bg-transparent border bg-white flex justify-center items-center dark:border-slate-900 dark:border-2'>
-                  <h1 className=' text-black dark:text-slate-700 font-semibold'>{currentAccount ? `${currentAccount}` : "No account connected"}</h1></div>
-                <h1 className='font-thin text-xl text-center dark:font-normal'>{user?.Description}</h1>
-                <h1 className='
-                            text-[#a8a7a7] font-medium dark:text-slate-800'>
-                  {`Joined ${formattedDate}`}
-                </h1>
-                <Button onClick={() => {
+            <div className='flex flex-col rounded-lg relative '>
+              <img src={user?.MainImage_URL} alt="" className='w-[150px] h-[150px] object-cover absolute rounded-3xl -top-16 left-1/2 transform -translate-x-1/2 sm:left-0 sm:translate-x-0 border z-[5] shadow-[0_0_20px_white] dark:shadow-[0_0_20px_black] ' />
+              <div className=' flex flex-col mt-28'>
+                <div className=' flex justify-between'>
+                <h1 className=' font-bold  text-4xl   '>{user?.Name}</h1>
+                <div className=' flex gap-4'>
+                <Button className={"flex justify-around "}>
+                  <LuCopyPlus className=' text-xl mr-2 ' />
+                  <editt/>
+                  <h1 className=' text-black text-base dark:text-white font-semibold'>{currentAccount ? `${trimAddress(currentAccount)}` : "No account connected"}</h1></Button>
+                  <Button onClick={() => {
                   setEditUserOpen(true)
                   if (typeof window != 'undefined' && window.document) {
                     console.log(document.body.style.overflow);
@@ -151,72 +157,79 @@ function Profile() {
                     console.log(document.body.style.overflow);
 
                   }
-                }} >Edit</Button>
-                <Button onClick={() => logoutt()}>Logout</Button>
+                }} className={"pr-2 pl-3"}><FaUserEdit className=' text-2xl'/></Button>
+                  <Button onClick={() => logoutt()} className={"pr-2 pl-2"}><RiLogoutCircleRLine className=' text-2xl'/></Button>
+                </div>
+                </div>
+                {/* <div className='h-[30px] w-[430px] rounded-full bg-transparent border bg-white flex justify-center items-center dark:border-slate-900 dark:border-2'>
+                  <h1 className=' text-black dark:text-slate-700 font-semibold'>{currentAccount ? `${currentAccount}` : "No account connected"}</h1></div> */}
+                <h1 className='
+                            text-[#a8a7a7] font-medium dark:text-slate-800'>
+                  {`Joined ${formattedDate}`}
+                </h1>
+                
+                <h1 className='font-thin text-xl mt-8 dark:font-normal'>{user?.Description}</h1>
+                
               </div>
             </div>
 
           </Container>
         </section>
-        <section className="h-[100vh]">
+
+        {/* show all nft by their owner */}
+        <section className=' my-10 '>
           <Container>
-            <div className="flex flex-col justify-center min-h-screen">
-              <div className="items-center flex justify-center">
-                <h1 className="font-logofont text-white dark:text-black text-3xl mb-8">
-                  Live Bidding{" "}
-                  <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
-                    NFTs
-                  </span>
-                </h1>
-              </div>
-              <div>
-                <Swiper
-                  slidesPerView={1}
-                  spaceBetween={7}
-                  loop={true}
-                  autoplay={{
-                    delay: 2500,
-                    disableOnInteraction: false,
-                  }}
-                  breakpoints={{
-                    "@0.00": {
-                      slidesPerView: 1,
-                      spaceBetween: 10,
-                    },
-                    "@0.75": {
-                      slidesPerView: 2,
-                      spaceBetween: 20,
-                    },
-                    "@1.00": {
-                      slidesPerView: 3,
-                      spaceBetween: 40,
-                    },
-                    "@1.50": {
-                      slidesPerView: 3.5,
-                      spaceBetween: 50,
-                    },
-                  }}
-                  modules={[Autoplay]}
-                  className="mySwiper"
-                >
-                  {nfts.map((nft) => (
-                    <SwiperSlide key={nft.tokenId}>
-                      <Card3Dusage
-                        Name={nft.name}
-                        Creator={nft.owner}
-                        Price={nft.price}
-                        Image={nft.image}
-                        tokenId={nft.tokenId}
-                        description={nft.description}
-                        owner={nft.owner}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-              </div>
+            <div className=' border-b-2 border-zinc-800 dark:border-[#c7c7c7]'></div>
+          <div className='flex rounded-xl  dark:text-zinc-400 text-zinc-500 text-xl font-bold'>
+            <div 
+              className={`w-1/2 text-center flex justify-center items-center gap-2 py-2 rounded-s-lg cursor-pointer ${selected === 'owned' ? 'text-white dark:text-black' : ''}`} 
+              onClick={() => {setShowNfts(NftsData.getBoughtNftsByOwner(nftss, currentAccount))
+                setSelected('owned')}
+              }
+            >
+              Owned <span className={` bg-zinc-600 ${selected === 'owned' ? 'text-white ' : ''} py-1 px-3  text-base rounded-xl`}>{boughtNfts.length}</span>
             </div>
+            <div 
+              className={`w-1/2 text-center flex justify-center items-center gap-2 py-2 rounded-e-lg cursor-pointer ${selected === 'onSale' ? 'text-white dark:text-black' : ''}`} 
+              onClick={() => {setShowNfts(NftsData.getOnSaleNftsByOwner(nftss, currentAccount))
+                setSelected('onSale')
+              }}
+            >
+              On Sale <span className={` bg-zinc-600 ${selected === 'onSale' ? 'text-white ' : ''} py-1 px-3  text-base rounded-xl`}>{onSaleNfts.length}</span>
+            </div><div 
+              className={`w-1/2 text-center flex justify-center items-center gap-2 py-2 rounded-e-lg cursor-pointer ${selected === 'onAuction' ? 'text-white dark:text-black' : ''}`} 
+              onClick={() => {setShowNfts(NftsData.getOnAuctionNftsByOwner(nftss, currentAccount))
+                setSelected('onAuction')
+              }}
+            >
+              On Auction <span className={` bg-zinc-600 ${selected === 'onAuction' ? 'text-white ' : ''} py-1 px-3  text-base rounded-xl`}>{onAuctionNfts.length}</span>
+            </div>
+          </div>
+          <div className=' border-b-2 border-zinc-800 dark:border-[#c7c7c7]'></div>
+
+          <div className="flex gap-4 flex-wrap mt-5 justify-center">
+            {showNfts.length > 0 ? (
+              showNfts.map((nft) => (
+                <Card3Dusage
+                  key={nft.tokenId}
+                  tokenId={nft.tokenId}
+                  Name={nft.name}
+                  Creator={nft.creator}
+                  Price={nft.price}
+                  Image={nft.image}
+                />
+              ))
+            ) : (
+              <div className="text-center h-[483.2px] mt-5 flex items-center text-white dark:text-slate-950">
+                No NFTs found with that name. Try a different search.
+              </div>
+            )}
+          </div>
           </Container>
         </section>
+
+
+        
       </div>
       {
         editUserOpen && <EditUser userdata={user} onClose={() => {

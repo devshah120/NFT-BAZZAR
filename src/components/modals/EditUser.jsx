@@ -119,7 +119,7 @@ function EditUser({userdata,onClose}) {
     };
   }, [MainImage_URL, BgImage_URL]);
   return (
-    <div className=' fixed top-0 bottom-0 left-0 right-0 bg-gray-700 bg-opacity-40 flex items-center justify-center z-20'>
+    <div className=' fixed top-0 bottom-0 left-0 right-0 bg-gray-700 bg-opacity-40 flex items-center justify-center rounded-3xl z-20'>
       <div className=' bg-white p-4 m-1 rounded w-full max-w-sm relative py-10'>
         <RxCross2 onClick={onClose} className=' absolute h-6 w-6 right-2 top-2'/>
         <h2 className=' text-center font-semibold'>Profile</h2>

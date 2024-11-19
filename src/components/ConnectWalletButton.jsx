@@ -56,7 +56,7 @@ const ConnectWalletButton = () => {
         className=" h-10 w-10  items-center flex justify-center"
         onClick={connectWallet}
       >
-        <IoWalletOutline className=" h-7 w-7 " />
+        <IoWalletOutline className=" h-7 w-7 dark:text-black " />
       </button>)}
     </div>
   );
