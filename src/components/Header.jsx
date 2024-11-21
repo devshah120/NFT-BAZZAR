@@ -10,6 +10,7 @@ import tmenu from "../assets/header/menu.svg";
 import tclose from "../assets/header/close.svg";
 import Rarrow from "../assets/header/right-arrow.svg";
 import { Link, NavLink } from "react-router-dom";
+import { connectWallet } from "./ConnectWalletButton";
 function Header() {
   const [navTog, setNavTog] = useState(false);
   const [exp, setExp] = useState(false);
@@ -123,6 +124,7 @@ function Header() {
             </Link>
             {/* <Link to='/' onClick={() => setNavTog(false)}><img src={logo} className=' h-[40px] w-[40px]'></img></Link> */}
             <div className="flex">
+              <ConnectWalletButton />
               <ThemeToggle />
               <span
                 onClick={() => {

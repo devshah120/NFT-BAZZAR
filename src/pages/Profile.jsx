@@ -141,10 +141,15 @@ function Profile() {
             <div className='flex flex-col rounded-lg relative '>
               <img src={user?.MainImage_URL} alt="" className='w-[150px] h-[150px] object-cover absolute rounded-3xl -top-16 left-1/2 transform -translate-x-1/2 sm:left-0 sm:translate-x-0 border z-[5] shadow-[0_0_20px_white] dark:shadow-[0_0_20px_black] ' />
               <div className=' flex flex-col mt-28'>
-                <div className=' flex justify-between'>
-                <h1 className=' font-bold  text-4xl   '>{user?.Name}</h1>
-                <div className=' flex gap-4'>
-                <Button className={"flex justify-around "}>
+                <div className=' flex sm:justify-between flex-col sm:flex-row '>
+                <div>
+                <h1 className=' font-bold text-center sm:text-left text-4xl '>{user?.Name}</h1>
+                <h1 className='
+                            text-[#a8a7a7] font-medium text-center sm:text-left dark:text-slate-800'>
+                  {`Joined ${formattedDate}`}
+                </h1></div>
+                <div className=' flex gap-4 justify-center mt-5'>
+                <Button className={"flex justify-around h-fit"}>
                   <LuCopyPlus className=' text-xl mr-2 ' />
                   <editt/>
                   <h1 className=' text-black text-base dark:text-white font-semibold'>{currentAccount ? `${trimAddress(currentAccount)}` : "No account connected"}</h1></Button>
@@ -157,18 +162,15 @@ function Profile() {
                     console.log(document.body.style.overflow);
 
                   }
-                }} className={"pr-2 pl-3"}><FaUserEdit className=' text-2xl'/></Button>
-                  <Button onClick={() => logoutt()} className={"pr-2 pl-2"}><RiLogoutCircleRLine className=' text-2xl'/></Button>
+                }} className={"pr-2 pl-3 h-fit"}><FaUserEdit className=' text-2xl'/></Button>
+                  <Button onClick={() => logoutt()} className={"pr-2 pl-2 h-fit"}><RiLogoutCircleRLine className=' text-2xl'/></Button>
                 </div>
                 </div>
                 {/* <div className='h-[30px] w-[430px] rounded-full bg-transparent border bg-white flex justify-center items-center dark:border-slate-900 dark:border-2'>
                   <h1 className=' text-black dark:text-slate-700 font-semibold'>{currentAccount ? `${currentAccount}` : "No account connected"}</h1></div> */}
-                <h1 className='
-                            text-[#a8a7a7] font-medium dark:text-slate-800'>
-                  {`Joined ${formattedDate}`}
-                </h1>
                 
-                <h1 className='font-thin text-xl mt-8 dark:font-normal'>{user?.Description}</h1>
+                
+                <h1 className='font-thin text-wrap text-center sm:text-left text-xl mt-8 dark:font-normal'>{user?.Description}</h1>
                 
               </div>
             </div>
