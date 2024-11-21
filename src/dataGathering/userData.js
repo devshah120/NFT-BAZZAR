@@ -5,7 +5,7 @@ export class UserService {
     async login({MetaHash}){
         try {
                 // Proceed with minting the NFT
-                const userdata = await axios.post('/api/user/login', {MetaHash});
+                const userdata = await axios.post('http://127.0.0.1:3000/api/user/login', {MetaHash},{withCredentials: true});
                 console.log(userdata);
                 return userdata; 
         } catch (error) {
@@ -16,7 +16,7 @@ export class UserService {
     async register({MetaHash,Name,Email,Description,MainImage_URL,BgImage_URL}){
         try {
                 // Proceed with minting the NFT
-                const userdata = await axios.post('/api/user/register', {MetaHash,Name,Email,Description,MainImage_URL,BgImage_URL});
+                const userdata = await axios.post('http://127.0.0.1:3000/api/user/register', {MetaHash,Name,Email,Description,MainImage_URL,BgImage_URL});
                 console.log(userdata);
                 return userdata;
         } catch (error) {
