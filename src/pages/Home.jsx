@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import Bidcard from "../components/cards/Bidcard";
 import {
   Container,
   MainImgAni,
@@ -27,6 +26,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import {
   motion,
   useInView,
+  useViewportScroll,
   useAnimation,
   AnimatePresence,
   useScroll,
@@ -48,11 +48,24 @@ import NftsData from "../dataGathering/nftsData"
 import { useSelector } from "react-redux";
 function Home() {
 
+  const { scrollY } = useViewportScroll();
+  const y1 = useTransform(scrollY, [0, 300], [0, -100]);
+  const y2 = useTransform(scrollY, [0, 300], [0, -200]);
+  const [enableScrollEffect, setEnableScrollEffect] = useState(false);
+
+  // Start scroll-driven transformation after the animation is done
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEnableScrollEffect(true);
+    }, 3000); // Match the animation delay + duration
+    return () => clearTimeout(timer);
+  }, []);
 
 
 
   const nftss = useSelector((state) => state.nfts.nftList)
   const myRef = useRef(null);
+  const imgRef = useRef(null);
   const isInView = useInView(myRef);
   const mainControl = useAnimation();
   const navigate = useNavigate();
@@ -140,9 +153,110 @@ const useDelayByScreen = (dilay = 1) => {
       </section> */}
 
         {/* hero section */}
-        <ScrollAnimationItem >
 
-          <section className="h-[100vh] overflow-hidden">
+          <section className="h-[100vh] relative overflow-hidden">
+
+          <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: -100, y:-200  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y2 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-56 top-28" src={gsa}></motion.img>
+            <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 100, y:200  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y2 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 right-64 bottom-10" src={csa}></motion.img>
+              <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 0, y:200  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y1 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-1/3 bottom-28" src={dsa}></motion.img>
+            <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: -100, y:0  },
+                // visiible: {  },
+              }} 
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y1 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150 left-10 top-80" src={esa}></motion.img>
+              <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 100, y:-200  },
+                // visiible: {  },
+              }} 
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y1 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150 right-56 top-40" src={fsa}></motion.img>
+              <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 0, y:-200  },
+                // visiible: {  },
+              }} 
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y1 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150  right-1/4 top-10" src={asa}></motion.img>
+            <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 0, y:-200  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y2 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 left-1/3 top-28" src={gsa}></motion.img>
+            <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: -100, y:200  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y2 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 left-20 bottom-20" src={dig}></motion.img>
+              <motion.img 
+              ref={imgRef}
+              variants={{
+                hiddden: { opacity: 0, x: 100, y: 0  },
+                // visiible: {  },
+              }}
+              initial="hiddden"
+              animate={{opacity: 1, x: 0, y:0}}
+              style={enableScrollEffect ? { y: y1 } : {}}
+              transition={{type: 'spring', duration: 2, delay: 1 }}
+              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 right-20 top-80" src={aig}></motion.img>
+
+
             {/* <BackgroundGradientAnimation> */}
             <Container>
               <motion.div className=" w-full flex items-center flex-row justify-center min-h-screen "
@@ -170,51 +284,12 @@ const useDelayByScreen = (dilay = 1) => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.2 }}
                   >NFTS!</motion.h1>
-
-                  {/* <div className="w-[40rem] h-40 relative">
-                            
-                            <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[2px] w-3/4 blur-sm" />
-                            <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-3/4" />
-                            <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-[5px] w-1/4 blur-sm" />
-                            <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-white dark:via-black to-transparent h-px w-1/4" />
-                    
-                            
-                            <SparklesCore
-                              background="transparent"
-                              minSize={0.9}
-                              maxSize={2}
-                              particleDensity={1000}
-                              className="w-full h-full"
-                              particleColor="#2196F3" 
-                            />
-                    
-                            
-                            <div className="absolute inset-0 w-full h-full dark:bg-white bg-black [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]"></div>
-                          </div> */}
-
-
-                  {/* <motion.div className="relative mt-10 sm:w-[600px] rounded-xl dark:shadow-[0_0_10px_purple]"
-                        initial={{opacity: 0, x: -200}}
-                        animate={{opacity:1,x:0}}
-                        transition={{delay:0.3}}
-                        >
-                            <input type="text" id="password" className="w-full  pl-3 pr-10 py-2 hover:border-2 bg-[#ffffff2b]  rounded-xl hover:border-sky-300 focus:outline-none focus:border-sky-500 transition-colors text-sky-200 font-semibold dark:text-slate-950 dark:border-2 dark:border-sky-400 " placeholder="Search By Collection,NFT Or User"></input>
-                            <button className=" w-7 h-7 text-center text-xl leading-0 absolute top-2 right-2  focus:outline-none hover:sky-200 transition-colors flex items-center justify-center  "><img src={mag} alt="" className=" h-5 w-5 " /></button>
-                        </motion.div>
-                      <motion.div className=" mt-4 "
-                      initial={{opacity: 0, x: 200}}
-                      animate={{opacity:1,x:0}}
-                      transition={{delay:0.4}}>
-                        <h3 className=" text-white dark:text-slate-950 text-center"><span className=" text-sky-300 dark:text-purple-900 dark:font-semibold">Popular searches:</span> cryptopunks, bored ape yacht club, moonbirds
-                        </h3>
-                      </motion.div> */}
                 </div>
 
               </motion.div>
             </Container>
             {/* </BackgroundGradientAnimation> */}
           </section>
-        </ScrollAnimationItem>
         {/* <motion.div
         className=" h-1  bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] animate-gradient"
         style={{ backgroundSize: "200% 200%" }}
@@ -257,7 +332,7 @@ const useDelayByScreen = (dilay = 1) => {
                   </motion.h1>
                 </div>
 
-                <div className="items-center  gap-12  flex flex-col sm:flex-row justify-center">
+                <div className="items-center  gap-12  flex flex-col flex-wrap sm:flex-row justify-center">
                   <motion.div
                   ref={myRef}
                   variants={{

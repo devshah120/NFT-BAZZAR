@@ -48,7 +48,7 @@ function Profile() {
 
 
 
-  const [selected, setSelected] = useState()
+  const [selected, setSelected] = useState('owned')
   const [onSaleNfts, setOnSaleNfts] = useState([])
   const [onAuctionNfts, setOnAuctionNfts] = useState([])
   const [boughtNfts, setBoughtNfts] = useState([])
@@ -139,7 +139,8 @@ function Profile() {
           <Container >
 
             <div className='flex flex-col rounded-lg relative '>
-              <img src={user?.MainImage_URL} alt="" className='w-[150px] h-[150px] object-cover absolute rounded-3xl -top-16 left-1/2 transform -translate-x-1/2 sm:left-0 sm:translate-x-0 border z-[5] shadow-[0_0_20px_white] dark:shadow-[0_0_20px_black] ' />
+            <div className='w-[150px] h-[150px] shadow-[inset_-2px_-2px_10px_rgba(255,255,255,0.5)]  z-[7] -top-16 left-1/2 transform -translate-x-1/2 sm:left-0 sm:translate-x-0  absolute rounded-3xl '></div>
+              <img src={user?.MainImage_URL} alt="" className='w-[150px] h-[150px] object-cover absolute rounded-3xl -top-16 left-1/2 transform -translate-x-1/2 sm:left-0 sm:translate-x-0  z-[5] ' />6-
               <div className=' flex flex-col mt-28'>
                 <div className=' flex sm:justify-between flex-col sm:flex-row '>
                 <div>
@@ -223,7 +224,7 @@ function Profile() {
               ))
             ) : (
               <div className="text-center h-[483.2px] mt-5 flex items-center text-white dark:text-slate-950">
-                No NFTs found with that name. Try a different search.
+                No NFTs found.
               </div>
             )}
           </div>

@@ -10,11 +10,14 @@ const ConnectWalletButton = () => {
     const navigate = useNavigate();
   
     const connectWallet = async () => {
-  
+      console.log("button clicked");
+      
       if (typeof window.ethereum !== "undefined") {
         // MetaMask detected
         try {
           // Request account access
+          console.log("in the browser");
+          
           const accounts = await window.ethereum.request({
             method: "eth_requestAccounts",
           });
