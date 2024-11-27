@@ -126,8 +126,8 @@ function CreateNFT() {
            }
         }
         // Call uploadToPinata with imageUrl
-        setLoader(false);
         navigate("/")
+        setLoader(false);
         
       } else {
         console.error("No image  available to upload.");
@@ -145,11 +145,11 @@ function CreateNFT() {
     <section className="my-10">
       <Container>
         <div className="flex flex-col items-center md:flex-row md:items-start md:justify-center">
-          <div className="max-w-md w-full md:mr-10 rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-            <h2 className="font-bold text-xl text-center text-neutral-800 dark:text-neutral-200">
+          <div className="max-w-md w-full md:mr-10 rounded-2xl p-4 md:p-8 shadow-input bg-zinc-800 dark:bg-white">
+            <h2 className="font-bold text-xl text-center dark:text-neutral-800 text-neutral-200">
               Welcome to NFT BAZZAR
             </h2>
-            <p className="text-neutral-600 text-sm  text-center max-w-sm mt-2 dark:text-neutral-300">
+            <p className="dark:text-neutral-600 text-sm  text-center max-w-sm mt-2 text-neutral-300">
               Create your unique NFT effortlessly. Upload your artwork, add
               details, set the price, and mint it on the blockchain.
               <br />
@@ -269,7 +269,7 @@ function CreateNFT() {
                   <Label htmlFor="price">NFT Price (MATIC)</Label>
                   <Input
                     placeholder="Enter Amount"
-                    type="text"
+                    type="number"
                     {...register("Price")}
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
@@ -293,7 +293,7 @@ function CreateNFT() {
               >
                 <div
                   className={cn(
-                    `flex flex-col gap-2 w-full border-none bg-gray-50 rounded-lg dark:bg-zinc-800 text-black dark:text-white shadow-input  p-4 text-sm  file:border-0 file:bg-transparent 
+                    `flex flex-col gap-2 w-full border-none bg-gray-50 rounded-lg dark:bg-[#ededed] text-black dark:text-black shadow-input  p-4 text-sm  file:border-0 file:bg-transparent 
           file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
           focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
            disabled:cursor-not-allowed disabled:opacity-50
@@ -317,7 +317,7 @@ function CreateNFT() {
                     <h1 className=" font-bold text-[#5a5a5a] text-sm">
                       You will receive
                     </h1>
-                    <h1>{price-0.0025} MATIC</h1>
+                    <h1>{price ? 0 : (price-0.0025)} MATIC</h1>
                   </div>
                 </div>
               </motion.div>
@@ -346,7 +346,7 @@ function CreateNFT() {
                     value={catagory}
                     onChange={handleSelectChange}
                     className={cn(
-                      `flex flex-col w-full border-none bg-gray-50 rounded-lg dark:bg-zinc-800 text-black dark:text-white shadow-input  p-3 text-base  file:border-0 file:bg-transparent 
+                      `flex flex-col w-full border-none bg-gray-50 rounded-lg dark:bg-[#ededed]text-black dark:text-black shadow-input  p-3 text-base  file:border-0 file:bg-transparent 
           file:text-sm file:font-medium placeholder:text-neutral-400 dark:placeholder-text-neutral-600 
           focus-visible:outline-none focus-visible:ring-[2px]  focus-visible:ring-neutral-400 dark:focus-visible:ring-neutral-600
            disabled:cursor-not-allowed disabled:opacity-50

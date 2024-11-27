@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CountdownTimer = ({ initialSeconds }) => {
+const CountdownTimer = ({ initialSeconds=10000000 }) => {
   console.log("initsec",initialSeconds)
   const [timeLeft, setTimeLeft] = useState();
 

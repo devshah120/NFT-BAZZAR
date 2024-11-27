@@ -43,19 +43,11 @@ function Auction() {
   return (
     <main>
       <BackgroundGradientAnimation>
-        {/* <div className='p-4 h-full flex justify-center'>
-        <div className=' absolute z-[5] w-1/2 h-full flex justify-center flex-col'>
-          <h1 className=' text-2xl sm:text-4xl font-extrabold text-white dark:text-slate-950 text-left'>Capture Rare Digital Assets at Auction</h1>
-          <p className='max-w-2xl text-base md:text-xl mt-8 text-white dark:text-black'>Place your bids on the most sought-after NFTs and elevate your digital collection.</p>
-          <Button>Explore</Button>  
-        </div>
-        <div></div>
-      </div> */}
         <Container>
-          <div className="  flex flex-col  justify-center min-h-screen ">
+          <div className="  flex flex-col  justify-center ">
             <div className=" flex flex-col lg:flex-row gap-6">
               <div className="lg:w-1/2 items-center justify-center flex ">
-                <div className="flex flex-col items-center md:block">
+                <div className="flex flex-col items-center z-10 md:block">
                   <h3 className="font text-center md:text-left text-4xl font-bold tracking-tight text-[#fff] dark:text-black sm:text-6xl ease-in transition-all ">
                   Capture
                     <br className="md:hidden" />{" "}
@@ -91,7 +83,6 @@ function Auction() {
                 <Swiper
                   effect={"cards"}
                   grabCursor={true}
-                  // loop={true}
             autoplay={{
               delay: 3500,
               disableOnInteraction: false,
@@ -113,69 +104,13 @@ function Auction() {
                     </SwiperSlide>
                   ))}
                 </Swiper>
-                {/* <div className="flex items-center space-x-6 lg:space-x-8">
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6">
-                        <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all">
-                          <img
-                            src={asa}
-                            className="h-full w-full rounded-lg object-cover object-center "
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={bsa}
-                            className="h-full w-full rounded-lg object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={csa}
-                            alt=""
-                            className="h-full rounded-lg w-full object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all ">
-                          <img
-                            src={dsa}
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all  ">
-                          <img
-                            src={esa}
-                            className="h-full w-full rounded-lg object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                      <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                          <img
-                            src={fsa}
-                            alt=""
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
-                        <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg sm:opacity-0 lg:opacity-100 hover:scale-110 ease-in transition-all  ">
-                          <img
-                            src={gsa}
-                            className="h-full w-full  rounded-lg object-cover object-center"
-                          />
-                        </div>
-                      </div>
-                    </div> */}
+                
               </div>
             </div>
           </div>
-        </Container>
-      </BackgroundGradientAnimation>
-      <ScrollAnimationItem>
-  <section className="h-[100vh]">
-    <Container>
-      <div className="flex flex-col justify-center min-h-screen">
+          <div className="flex flex-col justify-center min-h-screen">
         <div className="items-center flex justify-center">
-          <h1 className="font-logofont text-white dark:text-black text-3xl mb-8">
+          <h1 className="font-logofont z-10 text-white dark:text-black text-3xl mb-8">
             Live Bidding{" "}
             <span className="bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient">
               NFTs
@@ -228,9 +163,9 @@ function Auction() {
           </Swiper>
         </div>
       </div>
-    </Container>
-  </section>
-</ScrollAnimationItem>
+        </Container>
+      </BackgroundGradientAnimation>
+      
     </main>
   );
 }

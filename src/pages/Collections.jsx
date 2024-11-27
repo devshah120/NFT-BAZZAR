@@ -6,12 +6,13 @@ import { Container } from "../components";
 import { Link } from "react-router-dom";
 import Card3Dusage from '../components/cards/Card3Dusage';
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
-
+import { useSelector } from "react-redux";
 
 
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
+import NftsData from "../dataGathering/nftsData"
 
 // Import Swiper styles
 import "swiper/css";
@@ -82,15 +83,14 @@ export const Collections = () => {
   const { fetchMyNFTsOrListedNFTs } = useContext(NFTBazzarContext);
   // const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  const [showNfts, setShowNfts] = useState([]);
+
   const { checkWalletConnected, currentAccount } =  useContext(NFTBazzarContext);
+  const nftss = useSelector((state) => state.nfts.nftList);
 
   useEffect(() => {
     console.log( currentAccount)
-    fetchMyNFTsOrListedNFTs(currentAccount).then((item) => {
-    setNfts(item.reverse());
-    setNftsCopy(item);
-    console.log(nfts);
-    });
+    setShowNfts(NftsData.getAllNfts(nftss));
     if (checkWalletConnected) {
       checkWalletConnected();
     } else {
@@ -146,7 +146,7 @@ export const Collections = () => {
             modules={[Autoplay]}
             className="mySwiper"
           >
-            {nfts.map((nft) => (
+            {nftss.map((nft) => (
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}
@@ -191,7 +191,7 @@ export const Collections = () => {
             modules={[Autoplay]}
             className="mySwiper"
           >
-            {nfts.map((nft) => (
+            {nftss.map((nft) => (
               <SwiperSlide key={nft.tokenId}>
                 <Card3Dusage
                   Name={nft.name}

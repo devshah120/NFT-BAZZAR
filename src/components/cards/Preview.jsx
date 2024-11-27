@@ -3,7 +3,7 @@
 import React from "react";
 import { CardBody, CardContainer, CardItem } from "./Card3D";
 import { Link } from "react-router-dom";
-import aimg from "../../assets/card/a.png"
+import aimg from "../../assets/card/polygon-matic-logo.png"
 import Nimg from "../../assets/card/art/nimg.jpg"
 export function Preview( {className, Name, Price, Image } ) {
 
@@ -12,7 +12,7 @@ export function Preview( {className, Name, Price, Image } ) {
   return (
       <Link to="/item">
     <CardContainer className={`inter-var ${className}`}>
-      <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-[300px] h-auto rounded-xl p-6 border  ">  
+      <CardBody className="bg-zinc-800 relative group/card md:hover:border-sky-500  dark:bg-white dark:border-black w-[300px] h-auto rounded-xl p-6 dark:border-2  ">  
 
       {/* main image */}
         <CardItem translateZ="100" className="w-full">
@@ -23,7 +23,7 @@ export function Preview( {className, Name, Price, Image } ) {
                 alt="thumbnail"
               />
             ) : (
-              <div className="h-72 w-72 object-cover rounded-xl group-hover/card:shadow-xl">
+              <div className="h-72 w-[250px]  rounded-xl group-hover/card:shadow-xl">
                 <span className="text-gray-400 text-sm">No Image Uploaded</span>
               </div>
             )}
@@ -31,22 +31,22 @@ export function Preview( {className, Name, Price, Image } ) {
         {/* Nft name */}
         <CardItem
           translateZ="70"
-          className="text-xl mt-2 font-bold text-black dark:text-white"
+          className="text-xl mt-2 font-bold text-white dark:text-black"
         >
           {defaultName}
         </CardItem>
         {/* created by */}
         <CardItem
           translateZ="60"
-          className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
+          className="text-neutral-500  text-sm max-w-sm mt-2 dark:text-neutral-300"
         >
           <div className=' flex gap-3 items-center mb-3'>
-                <img src={aimg} alt="" className=' h-10 w-10 rounded-full' />
+                <img src={Nimg} alt="" className=' h-10 w-10 rounded-full' />
                     <div>
-                        <h6 className=' text-xs text-[#838181]   font-semibold'>
+                        <h6 className='text-xs text-[#838181] font-semibold'>
                             Created By:
                         </h6>
-                        <h6 className=' text-sm ease-in transition-all  hover:text-[#28F0CC] font-bold text-[#212121] dark:text-white'>
+                        <h6 className='text-sm ease-in dark:text-black transition-all font-bold text-white'>
                             You
                         </h6>
                     </div>
@@ -66,15 +66,15 @@ export function Preview( {className, Name, Price, Image } ) {
                 <h6 className=' text-xs text-[#838181]  font-semibold'>Price</h6>
                 <div className=' flex gap-2'>
                     <img src={aimg} alt=""  className=' w-4'/>
-                    <h4 className=' text-sm   font-semibold dark:text-white text-[#212121]'>{
-                      defaultPrice}</h4>
+                    <h4 className=' text-sm font-semibold dark:text-black text-white'>{
+                      defaultPrice} MATIC</h4>
                 </div>
             </div>
           </CardItem>
           <CardItem
             translateZ={40}
             as="button"
-            className="px-4 py-2 rounded-xl bg-black dark:bg-white dark:text-black text-white text-xs font-bold"
+            className="px-4 py-2 rounded-xl bg-white dark:bg-black dark:text-white text-black text-xs font-bold"
           >
             Buy Now
           </CardItem>

@@ -32,7 +32,7 @@ const Card3Dusage = ({ Name="soham", Creator, Price, Image={bimg}, tokenId,descr
           {/* Created by */}
           <CardItem translateZ="60" className="text-neutral-500  text-sm max-w-sm mt-2 dark:text-neutral-300">
             <div className='flex gap-3 items-center mb-3'>
-              <img src={bimg} alt="" className='h-10 w-10 rounded-full' />
+              {/* <img src={bimg} alt="" className='h-10 w-10 rounded-full' /> */}
               <div>
                 <h6 className='text-xs text-[#838181] font-semibold'>Created By:</h6>
                 <h6 className='text-sm ease-in dark:text-black transition-all font-bold text-white '>

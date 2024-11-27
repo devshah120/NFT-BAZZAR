@@ -12,7 +12,7 @@ import Card3Dusage from '../components/cards/Card3Dusage';
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import NftsData from "../dataGathering/nftsData";
 import { useSelector } from "react-redux";
-
+import { IoSearchOutline } from "react-icons/io5";
 export const Explore = () => {
   const nftss = useSelector((state) => state.nfts.nftList)
 
@@ -75,11 +75,11 @@ export const Explore = () => {
     }
   };
 
-  return (
+  return (  
     <main>
       <section
         className={cn(
-          "relative h-[40rem] flex items-center bg-black dark:bg-white justify-center w-full group"
+          "relative  flex items-center pb-10 dark:bg-white justify-center w-full group"
         )}
         onMouseMove={handleMouseMove}
       >
@@ -105,7 +105,7 @@ export const Explore = () => {
             }}
           />
 
-          <div className="max-w-7xl relative mx-auto py-48 md:py-30 px-4 w-full left-0 top-0">
+          <div className="max-w-7xl relative mx-auto mb-10 mt-20 px-4 w-full left-0 top-0">
             <h1 className="text-2xl md:text-7xl font-bold text-white dark:text-black">
               Explore Rare and Unique NFTs <br /> on Our Platform
             </h1>
@@ -136,7 +136,7 @@ export const Explore = () => {
                 onClick={handleSearchClick}
                 className="w-7 h-7 text-center text-xl leading-0 absolute top-2 right-2 focus:outline-none hover:text-sky-200 transition-colors flex items-center justify-center"
               >
-                <img src={mag} alt="" className="h-5 w-5" />
+                <IoSearchOutline className="h-5 w-5 text-white dark:text-black" />
               </button>
             </motion.div>
             <motion.div
@@ -153,11 +153,6 @@ export const Explore = () => {
               </h3>
             </motion.div>
           </div>
-        </Container>
-      </section>
-
-      <section>
-        <Container>
           <div className="flex gap-4 flex-wrap justify-center">
             {!isSearching ? (
               <div className="text-center text-white dark:text-slate-950">
@@ -182,6 +177,8 @@ export const Explore = () => {
           </div>
         </Container>
       </section>
+
+  
     </main>
   );
 };

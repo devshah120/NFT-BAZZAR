@@ -33,15 +33,7 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         address payable highestBidder; // Auction-specific data
     }
 
-    // struct Auction {
-    //     uint256 tokenId;
-    //     address payable seller;
-    //     uint256 minBid;
-    //     uint256 highestBid;
-    //     address payable highestBidder;
-    //     uint256 auctionEndTime;
-    //     bool active;
-    // }
+
 
     
 
@@ -150,56 +142,6 @@ contract NFTBazzar is ERC721URIStorage, ReentrancyGuard {
         _transfer(msg.sender, address(this), tokenId);
     }
 
-    // function createToken(
-    //     string memory tokenURI,
-    //     uint256 price
-    // ) public payable returns (uint256) {
-    //     _tokenIds.increment();
-    //     uint256 newTokenId = _tokenIds.current();
-
-    //     _mint(msg.sender, newTokenId);
-    //     _setTokenURI(newTokenId, tokenURI);
-    //     // createMarketItem(newTokenId, price);
-
-    //     emit TokenCreated(newTokenId, tokenURI, price);
-
-    //     return newTokenId;
-    // }
-
-    // // Create Market Item
-    // function createMarketItem(uint256 tokenId, uint256 price) private {
-    //     require(price > 0, "Price must be greater than 0");
-    //     require(
-    //         msg.value == listingPrice,
-    //         "Price Must be equal to the listing price"
-    //     );
-
-    //     idMarketItem[tokenId] = MarketItem(
-    //         tokenId,
-    //         payable(address(this)),
-    //         payable(msg.sender),
-    //         payable(msg.sender), 
-    //         payable(address(this)),
-    //         price,
-    //         false,
-    //         false,
-    //         true
-    //     );
-
-    //     _transfer(msg.sender, address(this), tokenId);
-
-    //     emit idMarketItemCreated(
-    //         tokenId,
-    //         address(this),
-    //         msg.sender,
-    //         msg.sender,
-    //         address(this),
-    //         price,
-    //         false,
-    //         false,
-    //         true
-    //     );
-    // }
     event BuyItem( uint256 tokenId, address indexed recipient);
     // Buy NFT
     function buyItem(uint256 tokenId) public payable nonReentrant() { 

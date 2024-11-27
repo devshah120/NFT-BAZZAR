@@ -8,14 +8,24 @@ import {
   Card3Dusage,
   Button,
 } from "../components";
-import aig from "../assets/working/85.png";
+import gmg from "../assets/Home/spacee.png";
+import amg from "../assets/Home/dogu.png";
+import bmg from "../assets/Home/cas.png";
+import cmg from "../assets/Home/gost.png";
+import dmg from "../assets/Home/sdsd.png";
+import emg from "../assets/Home/jj.png";
+import fmg from "../assets/Home/space.png";
+import hmg from "../assets/Home/sss.png";
+import iimg from "../assets/Home/dhurvil.png";
+import jmg from "../assets/Home/tiger.png";
+
 import big from "../assets/working/100.png";
 import cig from "../assets/working/400.png";
 import dig from "../assets/working/as.png";
+import aig from "../assets/working/85.png";
 import asa from "../assets/card/c.jpg";
 import bsa from "../assets/card/hh.jpg";
 import csa from "../assets/card/d.jpg";
-import dsa from "../assets/card/ee.jpg";
 import esa from "../assets/card/f.jpg";
 import fsa from "../assets/card/g.jpg";
 import gsa from "../assets/card/a.png";
@@ -44,10 +54,9 @@ import { BackgroundGradientAnimation } from "../components/Animation/BackgroudGr
 import { SparklesCore } from "../components/Animation/BottomSpartical";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
 import { useNavigate } from "react-router-dom";
-import NftsData from "../dataGathering/nftsData"
+import NftsData from "../dataGathering/nftsData";
 import { useSelector } from "react-redux";
 function Home() {
-
   const { scrollY } = useViewportScroll();
   const y1 = useTransform(scrollY, [0, 300], [0, -100]);
   const y2 = useTransform(scrollY, [0, 300], [0, -200]);
@@ -61,9 +70,7 @@ function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-
-
-  const nftss = useSelector((state) => state.nfts.nftList)
+  const nftss = useSelector((state) => state.nfts.nftList);
   const myRef = useRef(null);
   const imgRef = useRef(null);
   const isInView = useInView(myRef);
@@ -79,17 +86,15 @@ function Home() {
     }),
   };
 
-
-
   const { fetchNFTs } = useContext(NFTBazzarContext);
   const [onSaleNfts, setOnSaleNfts] = useState([]);
   const [onAuctionNfts, setOnAuctionNfts] = useState([]);
   const [nfts, setNfts] = useState([]);
 
   useEffect(() => {
-    setNfts(NftsData.getOnSaleNfts(nftss))
-    setOnSaleNfts(NftsData.getOnSaleNfts(nftss))
-    setOnAuctionNfts(NftsData.getOnAuctionNfts(nftss))
+    setNfts(NftsData.getOnSaleNfts(nftss));
+    setOnSaleNfts(NftsData.getOnSaleNfts(nftss));
+    setOnAuctionNfts(NftsData.getOnAuctionNfts(nftss));
   }, [nftss]);
 
   const { checkWalletConnected } = useContext(NFTBazzarContext);
@@ -117,179 +122,82 @@ function Home() {
     },
   };
 
+  const useDelayByScreen = (dilay = 1) => {
+    const [delay, setDelay] = useState(0.5);
 
-const useDelayByScreen = (dilay = 1) => {
-  const [delay, setDelay] = useState(0.5);
+    useEffect(() => {
+      const updateDelay = () => {
+        if (window.innerWidth <= 600) {
+          setDelay(1); // Small screens
+        } else {
+          setDelay(dilay); // Large screens
+        }
+      };
 
-  useEffect(() => {
-    const updateDelay = () => {
-      if (window.innerWidth <= 600) {
-        setDelay(1); // Small screens
-      }else {
-        setDelay(dilay); // Large screens
-      }
-    };
+      updateDelay();
+      window.addEventListener("resize", updateDelay);
 
-    updateDelay();
-    window.addEventListener("resize", updateDelay);
+      return () => window.removeEventListener("resize", updateDelay);
+    }, []);
 
-    return () => window.removeEventListener("resize", updateDelay);
-  }, []);
-
-  return delay;
-};
+    return delay;
+  };
 
   return (
     <main className=" overflow-y-hidden ">
       <div className="min-h-screen text-black dark:text-black">
-        {/* <section className="h-[100vh]">
-        <BackgroundGradientAnimation>
-        <div className="absolute z-50 h-full inset-0 flex items-center justify-center text-white font-bold px-4 pointer-events-none text-3xl text-center md:text-4xl lg:text-7xl">
-          <p className="bg-clip-text text-transparent drop-shadow-2xl bg-gradient-to-b from-white/80 to-white/20">
-            Gradients X Animations
-          </p>
-        </div>
-        </BackgroundGradientAnimation>
-      </section> */}
-
-        {/* hero section */}
-
-          <section className="h-[100vh] relative overflow-hidden">
-
-          <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: -100, y:-200  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y2 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-56 top-28" src={gsa}></motion.img>
-            <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 100, y:200  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y2 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 right-64 bottom-10" src={csa}></motion.img>
-              <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 0, y:200  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y1 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-1/3 bottom-28" src={dsa}></motion.img>
-            <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: -100, y:0  },
-                // visiible: {  },
-              }} 
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y1 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150 left-10 top-80" src={esa}></motion.img>
-              <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 100, y:-200  },
-                // visiible: {  },
-              }} 
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y1 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150 right-56 top-40" src={fsa}></motion.img>
-              <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 0, y:-200  },
-                // visiible: {  },
-              }} 
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y1 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[80px] w-[80px] rounded-3xl shadow-md shadow-slate-400 scale-150  right-1/4 top-10" src={asa}></motion.img>
-            <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 0, y:-200  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y2 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 left-1/3 top-28" src={gsa}></motion.img>
-            <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: -100, y:200  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y2 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 left-20 bottom-20" src={dig}></motion.img>
-              <motion.img 
-              ref={imgRef}
-              variants={{
-                hiddden: { opacity: 0, x: 100, y: 0  },
-                // visiible: {  },
-              }}
-              initial="hiddden"
-              animate={{opacity: 1, x: 0, y:0}}
-              style={enableScrollEffect ? { y: y1 } : {}}
-              transition={{type: 'spring', duration: 2, delay: 1 }}
-              className=" absolute h-[150px] w-[150px] rounded-3xl shadow-md shadow-slate-400 right-20 top-80" src={aig}></motion.img>
-
-
-            {/* <BackgroundGradientAnimation> */}
-            <Container>
-              <motion.div className=" w-full flex items-center flex-row justify-center min-h-screen "
-                // initial={{y:'90vw'}}
-                // animate={{y:0}}
-                // transition={{delay:0.1,type:'spring',stiffness:50}}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1, ease: "easeIn" }}
-
-              >
-
-                <div className=" flex justify-center flex-col items-center">
-
-
-                  <motion.h1 className=" text-2xl sm:text-5xl font-extrabold text-white dark:text-slate-950 text-center"
-                    initial={{ opacity: 0, x: -100 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY </motion.h1>
-
-                  <motion.h1 className=" text-[120px] leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
-                    initial={{ opacity: 0, x: 200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >NFTS!</motion.h1>
+        <section className="h-[100vh] relative overflow-hidden">
+          {/* <BackgroundGradientAnimation> */}
+          <Container>
+            <motion.div
+              className=" w-full flex items-center flex-col  min-h-screen "
+              // initial={{y:'90vw'}}
+              // animate={{y:0}}
+              // transition={{delay:0.1,type:'spring',stiffness:50}}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1, ease: "easeIn" }}
+            >
+              <div className=" flex justify-center my-20 gap-3 items-center">
+                <motion.h1
+                  className=" text-2xl sm:text-5xl z-10 font-extrabold text-white dark:text-slate-950 text-center"
+                  initial={{ opacity: 0, x: -100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY{" "}
+                </motion.h1>
+                <motion.h1
+                  className=" text-[120px] z-10 leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
+                  initial={{ opacity: 0, x: 200 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  NFTS!
+                </motion.h1>
+              </div>
+              <div className="flex gap-3 items-center w-full">
+                <div className="w-full"></div>
+                <div className=" w-full flex justify-center">
+                  <motion.img
+                    ref={imgRef}
+                    variants={{
+                      hiddden: { opacity: 0, x: -100, y: -200 },
+                    }}
+                    initial="hiddden"
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    style={enableScrollEffect ? { y: y2 } : {}}
+                    transition={{ type: "spring", duration: 2, delay: 1 }}
+                    className=" h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-56 top-28"
+                    src={gsa}
+                  ></motion.img>
                 </div>
-
-              </motion.div>
-            </Container>
-            {/* </BackgroundGradientAnimation> */}
-          </section>
+                <div className="w-full"></div>
+              </div>
+            </motion.div>
+          </Container>
+          {/* </BackgroundGradientAnimation> */}
+        </section>
         {/* <motion.div
         className=" h-1  bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] animate-gradient"
         style={{ backgroundSize: "200% 200%" }}
@@ -334,83 +242,90 @@ const useDelayByScreen = (dilay = 1) => {
 
                 <div className="items-center  gap-12  flex flex-col flex-wrap sm:flex-row justify-center">
                   <motion.div
-                  ref={myRef}
-                  variants={{
-                    hiddden: { opacity: 0, x: 100 },
-                    visiible: { opacity: 1, x: 0 },
-                  }}
-                  initial="hiddden"
-                  animate={mainControl}
-                  transition={{ duration: 0.5,delay: useDelayByScreen(1) }}
-                  whileInView ="visiible">
-                  <Trycard
-                    title={"Create Your Account & Add wallet"}
-                    sub={"Join and Manage Your NFTs: Account and Wallet Setup"}
-                    num={"1"}
-                    img={aig}
-                  />
+                    ref={myRef}
+                    variants={{
+                      hiddden: { opacity: 0, x: 100 },
+                      visiible: { opacity: 1, x: 0 },
+                    }}
+                    initial="hiddden"
+                    animate={mainControl}
+                    transition={{ duration: 0.5, delay: useDelayByScreen(1) }}
+                    whileInView="visiible"
+                  >
+                    <Trycard
+                      title={"Create Your Account & Add wallet"}
+                      sub={
+                        "Join and Manage Your NFTs: Account and Wallet Setup"
+                      }
+                      num={"1"}
+                      img={aig}
+                    />
                   </motion.div>
                   <motion.div
-                  ref={myRef}
-                  variants={{
-                    hiddden: { opacity: 0, x: 100 },
-                    visiible: { opacity: 1, x: 0 },
-                  }}
-                  initial="hiddden"
-                  animate={mainControl}
-                  transition={{ duration: 0.5,delay: useDelayByScreen(1.5) }}
-                  whileInView ="visiible">
-                  <Trycard
-                    title={"Get Approval From Our Review Team"}
-                    sub={
-                      "Our Review Team Guarantees Fast Approval for Your NFTs"
-                    }
-                    num={"2"}
-                    img={dig}
-                  />
+                    ref={myRef}
+                    variants={{
+                      hiddden: { opacity: 0, x: 100 },
+                      visiible: { opacity: 1, x: 0 },
+                    }}
+                    initial="hiddden"
+                    animate={mainControl}
+                    transition={{ duration: 0.5, delay: useDelayByScreen(1.5) }}
+                    whileInView="visiible"
+                  >
+                    <Trycard
+                      title={"Get Approval From Our Review Team"}
+                      sub={
+                        "Our Review Team Guarantees Fast Approval for Your NFTs"
+                      }
+                      num={"2"}
+                      img={dig}
+                    />
                   </motion.div>
                   <motion.div
-                  ref={myRef}
-                  variants={{
-                    hiddden: { opacity: 0, x: 100 },
-                    visiible: { opacity: 1, x: 0 },
-                  }}
-                  initial="hiddden"
-                  animate={mainControl}
-                  transition={{ duration: 0.5,delay: useDelayByScreen(2) }}
-                  whileInView ="visiible">
-                  <Trycard
-                    title={"Create Your NFTs & List For Them Sell"}
-                    sub={"Easily Create Your NFTs and List Them for Sale Today"}
-                    num={"3"}
-                    img={big}
-                  />
+                    ref={myRef}
+                    variants={{
+                      hiddden: { opacity: 0, x: 100 },
+                      visiible: { opacity: 1, x: 0 },
+                    }}
+                    initial="hiddden"
+                    animate={mainControl}
+                    transition={{ duration: 0.5, delay: useDelayByScreen(2) }}
+                    whileInView="visiible"
+                  >
+                    <Trycard
+                      title={"Create Your NFTs & List For Them Sell"}
+                      sub={
+                        "Easily Create Your NFTs and List Them for Sale Today"
+                      }
+                      num={"3"}
+                      img={big}
+                    />
                   </motion.div>
                   <motion.div
-                  ref={myRef}
-                  variants={{
-                    hiddden: { opacity: 0, x: 100 },
-                    visiible: { opacity: 1, x: 0 },
-                  }}
-                  initial="hiddden"
-                  animate={mainControl}
-                  transition={{ duration: 0.5,delay: useDelayByScreen(2.5) }}
-                  whileInView ="visiible">
-                  <Trycard
-                    title={"Now Sell Your NFTs & Review Our Site"}
-                    sub={
-                      "Sell NFTs and Review Our Site to Enhance User Experience"
-                    }
-                    num={"4"}
-                    img={cig}
-                  />
+                    ref={myRef}
+                    variants={{
+                      hiddden: { opacity: 0, x: 100 },
+                      visiible: { opacity: 1, x: 0 },
+                    }}
+                    initial="hiddden"
+                    animate={mainControl}
+                    transition={{ duration: 0.5, delay: useDelayByScreen(2.5) }}
+                    whileInView="visiible"
+                  >
+                    <Trycard
+                      title={"Now Sell Your NFTs & Review Our Site"}
+                      sub={
+                        "Sell NFTs and Review Our Site to Enhance User Experience"
+                      }
+                      num={"4"}
+                      img={cig}
+                    />
                   </motion.div>
                 </div>
               </motion.div>
             </Container>
           </ScrollAnimationItem>
         </section>
-         
 
         {/* Bidding Section */}
 
@@ -476,7 +391,6 @@ const useDelayByScreen = (dilay = 1) => {
           </section>
         </ScrollAnimationItem>
 
-
         {/*Top section*/}
         {/* bg-fixed bg-items bg-cover */}
         <section className="  ">
@@ -493,7 +407,6 @@ const useDelayByScreen = (dilay = 1) => {
                 </div>
                 <div>
                   <div className="grid md:grid-cols-4 gap-10 ">
-
                     {onSaleNfts.slice(0, 12).map((nft, index) => (
                       <motion.div
                         ref={myRef}
@@ -503,14 +416,19 @@ const useDelayByScreen = (dilay = 1) => {
                         }}
                         initial="hiddden"
                         animate={mainControl}
-                        transition={{ duration: 0.5,delay: 0.5 }}
-                        whileInView ="visiible"
+                        transition={{ duration: 0.5, delay: 0.5 }}
+                        whileInView="visiible"
                       >
-                        <Trendcard kii={index} mimg={nft.image} id={nft.tokenId} nftname={nft.name} price={`${nft.price} MATIC`} position={index + 1}></Trendcard>
+                        <Trendcard
+                          kii={index}
+                          mimg={nft.image}
+                          id={nft.tokenId}
+                          nftname={nft.name}
+                          price={`${nft.price} MATIC`}
+                          position={index + 1}
+                        ></Trendcard>
                       </motion.div>
                     ))}
-
-
                   </div>
                 </div>
               </div>
@@ -631,7 +549,10 @@ const useDelayByScreen = (dilay = 1) => {
                             </motion.span>
                           ))}
                       </div>
-                      <Button className="  mt-6 font-extrabold" onClick={() => navigate("/collections")}>
+                      <Button
+                        className="  mt-6 font-extrabold"
+                        onClick={() => navigate("/collections")}
+                      >
                         Discover Now
                       </Button>
                     </div>
@@ -640,29 +561,52 @@ const useDelayByScreen = (dilay = 1) => {
                     <div className="flex items-center space-x-6 lg:space-x-8">
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6">
                         <div className=" h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                          <img src={asa} className="h-full w-full rounded-lg object-cover object-center " />
+                          <img
+                            src={asa}
+                            className="h-full w-full rounded-lg object-cover object-center "
+                          />
                         </div>
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                          <img src={bsa} className="h-full w-full rounded-lg object-cover object-center" />
+                          <img
+                            src={bsa}
+                            className="h-full w-full rounded-lg object-cover object-center"
+                          />
                         </div>
                       </div>
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8 ">
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all ">
-                          <img src={csa} alt="" className="h-full rounded-lg w-full object-cover object-center" />
+                          <img
+                            src={csa}
+                            alt=""
+                            className="h-full rounded-lg w-full object-cover object-center"
+                          />
                         </div>
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg  hover:scale-110 ease-in transition-all ">
-                          <img src={dsa} className="h-full w-full  rounded-lg object-cover object-center" />
+                          <img
+                            src={dmg}
+                            className="h-full w-full  rounded-lg object-cover object-center"
+                          />
                         </div>
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
-                          <img src={esa} className="h-full w-full rounded-lg object-cover object-center" />
+                          <img
+                            src={esa}
+                            className="h-full w-full rounded-lg object-cover object-center"
+                          />
                         </div>
                       </div>
                       <div className="grid flex-shrink-0 grid-cols-1 gap-y-6 lg:gap-y-8">
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all">
-                          <img src={fsa} alt="" className="h-full w-full  rounded-lg object-cover object-center" />
+                          <img
+                            src={fsa}
+                            alt=""
+                            className="h-full w-full  rounded-lg object-cover object-center"
+                          />
                         </div>
                         <div className="h-[120px] w-[95px] md:h-[200px] md:w-[150px] overflow-hidden rounded-lg hover:scale-110 ease-in transition-all  ">
-                          <img src={gsa} className="h-full w-full  rounded-lg object-cover object-center" />
+                          <img
+                            src={gsa}
+                            className="h-full w-full  rounded-lg object-cover object-center"
+                          />
                         </div>
                       </div>
                     </div>

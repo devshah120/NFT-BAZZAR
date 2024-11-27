@@ -28,7 +28,9 @@ export class NftsService {
   // Get NFTs by NFT catagory
   getNftsByNftCategory(nfts,tokenId){
     const nftData = nfts.find(nft => nft.tokenId === tokenId);
-    return nfts.filter(nft => nft.category === nftData.category);
+    console.log(nfts);
+    
+    return nfts.filter(nft => nft.catagory === nftData.catagory);
   }
   
   // Get NFTs by owner
@@ -58,7 +60,7 @@ export class NftsService {
 
   // Get NFTs by catagory
   getNftsByCategory(nfts,category){
-    return nfts.filter(nft => nft.category === category);
+    return nfts.filter(nft => nft.catagory === category);
   }
 
 }

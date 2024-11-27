@@ -47,6 +47,18 @@ export class UserService {
         }
     }
 
+    async getUserData({MetaHash}){
+        console.log("MetaHAsh", MetaHash);
+        
+        try {
+            const userdata = await axios.post(`/api/user/user/${MetaHash}`);
+            console.log(userdata);
+            return userdata;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getUserDetails(){
         try {
             const userdata = await axios.get('/api/user/userdetails');

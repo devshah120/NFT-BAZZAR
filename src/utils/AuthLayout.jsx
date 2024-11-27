@@ -12,7 +12,10 @@ function AuthLayout({children}) {
           navigate('/');
         }
       }, 2000); // Delay of 300 milliseconds
-  
+        if (!user) {
+        
+        alert("You need to connect wallet first!");
+        }
       // Cleanup function to clear the timer if the component unmounts or dependencies change
       return () => clearTimeout(timer);
     },[user])

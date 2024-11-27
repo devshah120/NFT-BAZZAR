@@ -88,7 +88,22 @@ export const getUserDetails = async (req, res) => {
         res.status(500).json({ message: "Internal server error", error: error.toString() });
     }
 };
-
+export const getUserData = async (req,res) => {
+    try {
+        const MetaHash = req.params.MetaHash;
+        console.log("MetaHashMetaHashMetaHash",MetaHash);
+        
+        const user = await UserSchemas.findOne({MetaHash: MetaHash})
+        console.log("usedataaaa",user);
+        
+        if (!user) {
+            return res.status(201).json({ message: "User not found" });
+        }
+        res.status(200).json( {user} );
+    } catch{
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
 // export const getUserDetails = async (req, res) => {
 //     try {
 //         if (req.headers.cookie) {

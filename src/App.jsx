@@ -117,7 +117,7 @@ function App() {
         <Register />
       </div>
     ) : (
-      <div className=' bg-[#0c0c0c] dark:bg-white'>
+      <div className=' bg-[#04080f] dark:bg-white'>
           <Toaster/>
             <Header/>
             <ScrollToTop />
