@@ -31,7 +31,7 @@ import fsa from "../assets/card/g.jpg";
 import gsa from "../assets/card/a.png";
 import mag from "../assets/Home/mag.svg";
 // import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
-
+import Arrow from "../assets/Home/arrow.svg"
 import { Swiper, SwiperSlide } from "swiper/react";
 import {
   motion,
@@ -53,10 +53,34 @@ import NFTCategoryToggle from "../components/Profile";
 import { BackgroundGradientAnimation } from "../components/Animation/BackgroudGrediantAni";
 import { SparklesCore } from "../components/Animation/BottomSpartical";
 import { NFTBazzarContext } from "../../Context/NFTBazzarContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import NftsData from "../dataGathering/nftsData";
 import { useSelector } from "react-redux";
+import { AnimatedTooltip } from "../components/Animated-tooltip";
 function Home() {
+  const people = [
+    {
+      id: 1,
+      name: "John Doe",
+      designation: "Software Engineer",
+      image:
+        "https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=3387&q=80",
+    },
+    {
+      id: 2,
+      name: "Robert Johnson",
+      designation: "Product Manager",
+      image:
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+    },
+    {
+      id: 3,
+      name: "Jane Smith",
+      designation: "Data Scientist",
+      image:
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXZhdGFyfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60",
+    },
+  ];
   const { scrollY } = useViewportScroll();
   const y1 = useTransform(scrollY, [0, 300], [0, -100]);
   const y2 = useTransform(scrollY, [0, 300], [0, -200]);
@@ -146,11 +170,11 @@ function Home() {
   return (
     <main className=" overflow-y-hidden ">
       <div className="min-h-screen text-black dark:text-black">
-        <section className="h-[100vh] relative overflow-hidden">
+        <section className="h-[90vh] relative overflow-hidden flex items-center">
           {/* <BackgroundGradientAnimation> */}
           <Container>
             <motion.div
-              className=" w-full flex items-center flex-col  min-h-screen "
+              className=" w-full flex items-center flex-col justify-center h-full "
               // initial={{y:'90vw'}}
               // animate={{y:0}}
               // transition={{delay:0.1,type:'spring',stiffness:50}}
@@ -158,41 +182,101 @@ function Home() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1, ease: "easeIn" }}
             >
-              <div className=" flex justify-center my-20 gap-3 items-center">
+              <div className=" flex flex-col justify-center mb-12 gap-3 items-center">
                 <motion.h1
-                  className=" text-2xl sm:text-5xl z-10 font-extrabold text-white dark:text-slate-950 text-center"
+                  className=" text-2xl sm:text-5xl md:text-7xl z-10 font-extrabold text-white dark:text-slate-950 text-center"
                   initial={{ opacity: 0, x: -100 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 }}
                 >
-                  DISCOVERY COLLECT <br></br>& SELL EXTRAORDINARY{" "}
+                  DISCOVERY COLLECT
                 </motion.h1>
                 <motion.h1
-                  className=" text-[120px] z-10 leading-none sm:text-9xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
-                  initial={{ opacity: 0, x: 200 }}
+                  className=" text-2xl sm:text-5xl md:text-7xl z-10 font-extrabold text-white dark:text-slate-950 text-center"
+                  initial={{ opacity: 0, x: 100 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ delay: 0.1 }}
                 >
-                  NFTS!
+                  & SELL EXTRAORDINARY{" "}
                 </motion.h1>
+                
               </div>
               <div className="flex gap-3 items-center w-full">
-                <div className="w-full"></div>
-                <div className=" w-full flex justify-center">
+                <div className="w-full">
+                    <motion.h1
+                      className=" text-white "
+                      initial={{ opacity: 0, x: -200 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      An Expansive Metaverse to play,<br/>
+                      Build, Own, and Monetize your<br/>
+                      virtual experience.
+                    </motion.h1>
+                    <div className="text-white">
+                      <div className="flex items-center my-10 w-full">
+                        <AnimatedTooltip items={people} />
+                      <h1 className="ml-10">Meet our<br/>creators</h1>
+                      </div>
+                    </div>
+                </div>
+                <div className=" w-full flex justify-center ">
+                  <motion.div 
+                  ref={imgRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 0, y: 200 },
+                  }}
+                  initial="hiddden"
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  className=" w-[400px] h-64 overflow-hidden rounded-full bg-zinc-800 ">
+                    {/* <motion.h1
+                      className=" text-5xl z-10 text-center leading-none sm:text-8xl font-logofont bg-clip-text text-transparent bg-[linear-gradient(to_right,theme(colors.indigo.400),theme(colors.blue.500),theme(colors.fuchsia.400),theme(colors.sky.400),theme(colors.sky.400),theme(colors.fuchsia.400),theme(colors.blue.500),theme(colors.indigo.400))] bg-[length:200%_auto] animate-gradient"
+                      initial={{ opacity: 0, y: 200 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      NFTS! 
+                    </motion.h1> */}
                   <motion.img
                     ref={imgRef}
-                    variants={{
-                      hiddden: { opacity: 0, x: -100, y: -200 },
-                    }}
-                    initial="hiddden"
-                    animate={{ opacity: 1, x: 0, y: 0 }}
                     style={enableScrollEffect ? { y: y2 } : {}}
                     transition={{ type: "spring", duration: 2, delay: 1 }}
-                    className=" h-[100px] w-[100px] rounded-3xl shadow-md shadow-slate-400 left-56 top-28"
+                    className=" object-fill "
                     src={gsa}
                   ></motion.img>
+                  </motion.div>
                 </div>
-                <div className="w-full"></div>
+                <div className="w-full flex flex-col gap-10 items-center">
+                  <motion.div 
+                  ref={myRef}
+                  variants={{
+                    hiddden: { opacity: 0, x: 200, y: 0 },
+                  }}
+                  initial="hiddden"
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  className=" flex gap-10 justify-center w-full">
+                    <div className=" text-white">
+                      <h1 className=" text-3xl font-extrabold ">500+</h1>
+                      <h6 className=" text-lg ">creator</h6>
+                    </div>
+                    <div className=" text-white">
+                      <h1 className=" text-3xl font-extrabold ">1K</h1>
+                      <h6 className=" text-lg ">creator</h6>
+                    </div>
+                  </motion.div>
+                  <div>
+                  <div className=' ease duration-500'>
+                    <Link to={'/explore'}>
+                      <div className=' p-3 text-left w-fit flex flex-col  border  rounded-full group border-[#ffffff]'>
+                        <div className=' flex gap-3 items-center text-center'>
+                          <h4 className=' font-medium text-sm text-center px-5 text-nowrap  text-white cursor-default'>Explore All Artworks</h4>
+                          <div className=' bg-[#006AFF] rounded-full w-16 h-16 flex transition-all duration-500 ease group-hover:-rotate-45 group-hover:bg-[#FF7600] items-center justify-center'><img src={Arrow} alt="" /></div>
+                        </div>
+                      </div>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </Container>
